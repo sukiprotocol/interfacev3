@@ -168,7 +168,7 @@ export const vars = createGlobalTheme(':root', {
     // new uniswap colors:
     blue400: '#4C82FB',
     blue200: '#ADBCFF30',
-    pink400: '#FB118E',
+    pink400: '#1BB285',
     red700: '#530f10',
     red400: '#FA2C38',
     red300: '#FD766B',
