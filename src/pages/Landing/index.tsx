@@ -156,7 +156,7 @@ const LandingButton = styled(BaseButton)`
 `
 
 const ButtonCTA = styled(LandingButton)`
-  background: linear-gradient(93.06deg, #0bb481 2.66%, #6A83FF 98.99%);
+  background: linear-gradient(93.06deg, #0bb481 2.66%, #6a83ff 98.99%);
   border: none;
   color: ${({ theme }) => theme.white};
   transition: ${({ theme }) => `all ${theme.transition.duration.medium} ${theme.transition.timing.ease}`};
