@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/macro'
 import { InterfaceElementName } from '@uniswap/analytics-events'
-import walletBannerPhoneImageSrc from 'assets/images/wallet_banner_phone_image.png'
+import walletBannerPhoneImageSrc from 'assets/images/reward.svg'
 import { ReactComponent as AppleLogo } from 'assets/svg/apple_logo.svg'
 import { openDownloadApp, openWalletMicrosite } from 'components/AccountDrawer/DownloadButton'
 import { BaseButton } from 'components/Button'
@@ -108,7 +108,7 @@ export default function UniswapWalletBanner() {
 
       <AutoColumn gap="8px">
         <ThemedText.HeadlineMedium fontSize="24px" lineHeight="28px" color="white" maxWidth="60%">
-          <Trans>Uniswap in your pocket</Trans>
+          <Trans>Tester Reward is coming!</Trans>
         </ThemedText.HeadlineMedium>
       </AutoColumn>
 
@@ -125,16 +125,16 @@ export default function UniswapWalletBanner() {
               </ThemedText.LabelSmall>
             </BannerButton>
 
-            <BannerButton backgroundColor="black" onClick={openWalletMicrosite}>
+            <BannerButton backgroundColor="black" href="/">
               <ThemedText.LabelSmall color="white">
-                <Trans>Learn more</Trans>
+                <Trans>Soon</Trans>
               </ThemedText.LabelSmall>
             </BannerButton>
           </>
         ) : (
           <BannerButton backgroundColor="white" width="125px" onClick={openWalletMicrosite}>
             <ThemedText.LabelSmall color="black">
-              <Trans>Learn more</Trans>
+              <Trans>Soon</Trans>
             </ThemedText.LabelSmall>
           </BannerButton>
         )}
