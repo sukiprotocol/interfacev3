@@ -99,7 +99,7 @@ const Navbar = ({ blur }: { blur: boolean }) => {
           <Box className={styles.leftSideContainer}>
             <Box className={styles.logoContainer}>
               <UniIcon
-                width="48"
+                width="166"
                 height="48"
                 data-testid="uniswap-logo"
                 className={styles.logo}
