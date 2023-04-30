@@ -27,7 +27,7 @@ export const colors = {
   pink100: '#FFD9E4',
   pink200: '#FBA4C0',
   pink300: '#FF6FA3',
-  pink400: '#1BB285',
+  pink400: '#00A573',
   pink500: '#C41969',
   pink600: '#8C0F49',
   pink700: '#55072A',
@@ -84,7 +84,7 @@ export const colors = {
   blueVibrant: '#587BFF',
   // TODO: add magenta 50-900
   magenta300: '#FD82FF',
-  magentaVibrant: '#FC72FF',
+  magentaVibrant: '#30AA85',
   purple300: '#8440F2',
   purple900: '#1C0337',
   // TODO: add all other vibrant variations
@@ -123,7 +123,7 @@ const commonTheme = {
   promotional: colors.magenta300,
 
   brandedGradient: 'linear-gradient(139.57deg, #FF79C9 4.35%, #FFB8E2 96.44%);',
-  promotionalGradient: 'radial-gradient(101.8% 4091.31% at 0% 0%, #4673FA 0%, #0ba878 100%);',
+  promotionalGradient: 'radial-gradient(101.8% 4091.31% at 0% 0%, #2794AA 0%, #0ba878 100%);',
 
   hoverState: opacify(24, colors.blue200),
   hoverDefault: opacify(8, colors.gray300),
