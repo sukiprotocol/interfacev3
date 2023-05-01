@@ -18,7 +18,7 @@ import styled from 'styled-components/macro'
 // import { Bag } from './Bag'
 import Blur from './Blur'
 import { ChainSelector } from './ChainSelector'
-// import { MenuDropdown } from './MenuDropdown'
+import { MenuDropdown } from './MenuDropdown'
 import { SearchBar } from './SearchBar'
 import * as styles from './style.css'
 
@@ -83,13 +83,9 @@ export const PageTabs = () => {
           <Trans>Pools</Trans>
         </MenuItem>
       </Box>
-      {/* <MenuItem href="https://info.uniswap.org/#/" dataTestId="info-nav-link">
-        <BarChartIcon width={24} height={24} />
-        <Trans>Info</Trans>
-      </MenuItem>
       <Box marginY={{ sm: '4', md: 'unset' }}>
         <MenuDropdown />
-      </Box> */}
+      </Box>
     </>
   )
 }

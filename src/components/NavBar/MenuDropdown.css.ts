@@ -26,6 +26,7 @@ export const MenuRow = style([
   {
     lineHeight: '24px',
     textDecoration: 'none',
+    width: '220px',
   },
 ])
 
