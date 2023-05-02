@@ -13,18 +13,19 @@ import swapCardImgSrc from './images/swapCard.png'
 export const MAIN_CARDS = [
   {
     to: '/swap',
-    title: 'Swap tokens',
-    description: 'Buy, sell, and explore tokens on Ethereum, Polygon, Optimism, and more.',
+    title: 'Swap',
+    description: 'Buy, sell, and explore tokens on Ethereum, Scroll and more.',
     cta: 'Trade Tokens',
     darkBackgroundImgSrc: swapCardImgSrc,
     lightBackgroundImgSrc: swapCardImgSrc,
     elementName: InterfaceElementName.ABOUT_PAGE_SWAP_CARD,
   },
   {
-    to: '/nfts',
-    title: 'Trade NFTs',
-    description: 'Buy and sell NFTs across marketplaces to find more listings at better prices.',
-    cta: 'Explore NFTs',
+    to: 'https://bridge.sukiswap.com',
+    external: true,
+    title: 'Bridge',
+    description: 'Send and receive tokens at bridge, Add liquidity, Earn fees and SUKI.',
+    cta: 'Explore Tokens',
     darkBackgroundImgSrc: nftCardImgSrc,
     lightBackgroundImgSrc: nftCardImgSrc,
     elementName: InterfaceElementName.ABOUT_PAGE_NFTS_CARD,
@@ -40,7 +41,7 @@ const StyledCardLogo = styled.img`
 
 export const MORE_CARDS = [
   {
-    to: 'https://support.uniswap.org/hc/en-us/articles/11306574799117-How-to-use-Moon-Pay-on-the-Uniswap-web-app-',
+    to: '/swap',
     external: true,
     title: 'Buy crypto',
     description: 'Buy crypto with your credit card or bank account at the best rates.',
@@ -52,20 +53,20 @@ export const MORE_CARDS = [
   {
     to: '/pools',
     title: 'Earn',
-    description: 'Provide liquidity to pools on Uniswap and earn fees on swaps.',
+    description: 'Provide liquidity to pools on Sukiswap and earn fees on swaps.',
     lightIcon: <StyledCardLogo src={lightArrowImgSrc} alt="Analytics" />,
     darkIcon: <StyledCardLogo src={darkArrowImgSrc} alt="Analytics" />,
     cta: 'Provide liquidity',
     elementName: InterfaceElementName.ABOUT_PAGE_EARN_CARD,
   },
   {
-    to: 'https://docs.uniswap.org',
+    to: 'https://github.com/sukiprotocol',
     external: true,
     title: 'Build dApps',
     description: 'Build apps and tools on the largest DeFi protocol on Ethereum.',
     lightIcon: <Terminal color={lightTheme.textTertiary} size={48} />,
     darkIcon: <StyledCardLogo src={darkTerminalImgSrc} alt="Developers" />,
-    cta: 'Developer docs',
+    cta: 'Developer',
     elementName: InterfaceElementName.ABOUT_PAGE_DEV_DOCS_CARD,
   },
 ]

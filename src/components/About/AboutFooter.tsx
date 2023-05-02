@@ -151,7 +151,7 @@ export const AboutFooter = () => {
         <LinkGroup>
           <LinkGroupTitle>Protocol</LinkGroupTitle>
           <ExternalTextLink href="https://bridge.sukiswap.com">Bridge</ExternalTextLink>
-          <ExternalTextLink href="https://sukiswap.com/governance">Governance</ExternalTextLink>
+          <ExternalTextLink href="/vote">Governance</ExternalTextLink>
           <ExternalTextLink href="https://github.com/sukiprotocol">Developers</ExternalTextLink>
         </LinkGroup>
         {/* <LinkGroup>

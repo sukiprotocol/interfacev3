@@ -2,24 +2,24 @@ import { Trans } from '@lingui/macro'
 import { useWeb3React } from '@web3-react/core'
 import Web3Status from 'components/Web3Status'
 import { chainIdToBackendName } from 'graphql/data/util'
-// import { useIsNftPage } from 'hooks/useIsNftPage'
+import { useIsNftPage } from 'hooks/useIsNftPage'
 import { useIsPoolsPage } from 'hooks/useIsPoolsPage'
-// import { useAtomValue } from 'jotai/utils'
+import { useAtomValue } from 'jotai/utils'
 import { Box } from 'nft/components/Box'
 import { Row } from 'nft/components/Flex'
-import { PoolIcon, SwapIcon, TokenIcon, UniIcon } from 'nft/components/icons'
-// import { useProfilePageState } from 'nft/hooks'
-// import { ProfilePageStateType } from 'nft/types'
+import { NftIcon, PoolIcon, SwapIcon, TokenIcon, UniIcon } from 'nft/components/icons'
+import { useProfilePageState } from 'nft/hooks'
+import { ProfilePageStateType } from 'nft/types'
 import { ReactNode } from 'react'
 import { NavLink, NavLinkProps, useLocation, useNavigate } from 'react-router-dom'
-// import { shouldDisableNFTRoutesAtom } from 'state/application/atoms'
+import { shouldDisableNFTRoutesAtom } from 'state/application/atoms'
 import styled from 'styled-components/macro'
 
-// import { Bag } from './Bag'
+import { Bag } from './Bag'
 import Blur from './Blur'
 import { ChainSelector } from './ChainSelector'
 import { MenuDropdown } from './MenuDropdown'
-// import { SearchBar } from './SearchBar'
+import { SearchBar } from './SearchBar'
 import * as styles from './style.css'
 
 const Nav = styled.nav`
@@ -57,9 +57,9 @@ export const PageTabs = () => {
   const chainName = chainIdToBackendName(connectedChainId)
 
   const isPoolActive = useIsPoolsPage()
-  // const isNftPage = useIsNftPage()
+  const isNftPage = useIsNftPage()
 
-  // const shouldDisableNFTRoutes = useAtomValue(shouldDisableNFTRoutesAtom)
+  const shouldDisableNFTRoutes = useAtomValue(shouldDisableNFTRoutesAtom)
 
   return (
     <>
@@ -71,12 +71,12 @@ export const PageTabs = () => {
         <TokenIcon width={20} height={20} />
         <Trans>Tokens</Trans>
       </MenuItem>
-      {/* {!shouldDisableNFTRoutes && (
+      {!shouldDisableNFTRoutes && (
         <MenuItem dataTestId="nft-nav" href="/nfts" isActive={isNftPage}>
           <NftIcon width={20} height={20} />
           <Trans>NFTs</Trans>
         </MenuItem>
-      )} */}
+      )}
       <Box display={{ sm: 'flex', lg: 'none', xxl: 'flex' }} width="full">
         <MenuItem href="/pools" dataTestId="pool-nav-link" isActive={isPoolActive}>
           <PoolIcon width={20} height={20} />
@@ -91,8 +91,8 @@ export const PageTabs = () => {
 }
 
 const Navbar = ({ blur }: { blur: boolean }) => {
-  // const isNftPage = useIsNftPage()
-  // const sellPageState = useProfilePageState((state) => state.state)
+  const isNftPage = useIsNftPage()
+  const sellPageState = useProfilePageState((state) => state.state)
   const navigate = useNavigate()
 
   return (
@@ -115,29 +115,29 @@ const Navbar = ({ blur }: { blur: boolean }) => {
                 }}
               />
             </Box>
-            {/* {!isNftPage && ( */}
-            <Box display={{ sm: 'flex', lg: 'none' }}>
-              <ChainSelector leftAlign={true} />
-            </Box>
-            {/* )} */}
+            {!isNftPage && (
+              <Box display={{ sm: 'flex', lg: 'none' }}>
+                <ChainSelector leftAlign={true} />
+              </Box>
+            )}
             <Row display={{ sm: 'none', lg: 'flex' }}>
               <PageTabs />
             </Row>
           </Box>
-          {/* <Box className={styles.searchContainer}>
+          <Box className={styles.searchContainer}>
             <SearchBar />
-          </Box> */}
+          </Box>
           <Box className={styles.rightSideContainer}>
             <Row gap="12">
-              {/* <Box position="relative" display={{ sm: 'flex', navSearchInputVisible: 'none' }}>
+              <Box position="relative" display={{ sm: 'flex', navSearchInputVisible: 'none' }}>
                 <SearchBar />
-              </Box> */}
-              {/* {isNftPage && sellPageState !== ProfilePageStateType.LISTING && <Bag />}
-              {!isNftPage && ( */}
-              <Box display={{ sm: 'none', lg: 'flex' }}>
-                <ChainSelector />
               </Box>
-              {/* )} */}
+              {isNftPage && sellPageState !== ProfilePageStateType.LISTING && <Bag />}
+              {!isNftPage && (
+                <Box display={{ sm: 'none', lg: 'flex' }}>
+                  <ChainSelector />
+                </Box>
+              )}
 
               <Web3Status />
             </Row>

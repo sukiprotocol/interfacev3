@@ -356,9 +356,9 @@ export default function Landing() {
             <SubTextContainer>
               <SubText>
                 {shouldDisableNFTRoutes ? (
-                  <Trans>Buy, sell, and explore tokens</Trans>
+                  <Trans>Buy, sell, explore tokens and bridge</Trans>
                 ) : (
-                  <Trans>Buy, sell, and explore tokens and NFTs</Trans>
+                  <Trans>Buy, sell, explore tokens, NFTs and bridge</Trans>
                 )}
               </SubText>
             </SubTextContainer>
