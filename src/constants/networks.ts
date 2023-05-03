@@ -43,6 +43,7 @@ export const FALLBACK_URLS = {
     'https://rpc-mainnet.matic.quiknode.pro',
     'https://matic-mainnet-full-rpc.bwarelabs.com',
   ],
+
   [SupportedChainId.POLYGON_MUMBAI]: [
     // "Safe" URLs
     'https://matic-mumbai.chainstacklabs.com',
@@ -76,6 +77,14 @@ export const FALLBACK_URLS = {
   [SupportedChainId.BASE_GOERLI_TESTNET]: [
     // "Safe" URLs
     `https://goerli.base.org`,
+  ],
+  [SupportedChainId.CELO]: [
+    // "Safe" URLs
+    `https://forno.celo.org`,
+  ],
+  [SupportedChainId.CELO_ALFAJORES]: [
+    // "Safe" URLs
+    `https://alfajores-forno.celo-testnet.org`,
   ],
   [SupportedChainId.BNB]: [
     // "Safe" URLs
@@ -127,5 +136,7 @@ export const RPC_URLS = {
   ],
   [SupportedChainId.SCROLL_ALPHA_TESTNET]: FALLBACK_URLS[SupportedChainId.SCROLL_ALPHA_TESTNET],
   [SupportedChainId.BASE_GOERLI_TESTNET]: FALLBACK_URLS[SupportedChainId.BASE_GOERLI_TESTNET],
+  [SupportedChainId.CELO]: FALLBACK_URLS[SupportedChainId.CELO],
+  [SupportedChainId.CELO_ALFAJORES]: FALLBACK_URLS[SupportedChainId.CELO_ALFAJORES],
   [SupportedChainId.BNB]: [QUICKNODE_RPC_URL, ...FALLBACK_URLS[SupportedChainId.BNB]],
 }

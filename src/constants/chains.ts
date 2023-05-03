@@ -21,7 +21,8 @@ export enum SupportedChainId {
 
   SCROLL_ALPHA_TESTNET = 534354,
   BASE_GOERLI_TESTNET = 84531,
-
+  CELO = 42220,
+  CELO_ALFAJORES = 44787,
   BNB = 56,
 }
 
@@ -42,6 +43,8 @@ export const CHAIN_IDS_TO_NAMES = {
   [SupportedChainId.ARBITRUM_ONE]: 'arbitrum',
   [SupportedChainId.ARBITRUM_GOERLI]: 'arbitrum_goerli',
   [SupportedChainId.OPTIMISM]: 'optimism',
+  [SupportedChainId.CELO]: 'celo',
+  [SupportedChainId.CELO_ALFAJORES]: 'celo_alfajores',
   [SupportedChainId.OPTIMISM_GOERLI]: 'optimism_goerli',
   [SupportedChainId.BNB]: 'bnb',
 }
@@ -63,6 +66,7 @@ export const SUPPORTED_GAS_ESTIMATE_CHAIN_IDS = [
   SupportedChainId.SCROLL_ALPHA_TESTNET,
   SupportedChainId.BASE_GOERLI_TESTNET,
   SupportedChainId.OPTIMISM,
+  SupportedChainId.CELO,
   SupportedChainId.ARBITRUM_ONE,
   SupportedChainId.BNB,
 ] as const
@@ -94,6 +98,8 @@ export const L1_CHAIN_IDS = [
   SupportedChainId.MAINNET,
   SupportedChainId.GOERLI,
   SupportedChainId.POLYGON,
+  SupportedChainId.CELO,
+  SupportedChainId.CELO_ALFAJORES,
   SupportedChainId.POLYGON_MUMBAI,
   SupportedChainId.BNB,
 ] as const

@@ -1,4 +1,5 @@
 import bnbCircleLogoUrl from 'assets/images/bnbCircle.svg'
+import celoCircleLogoUrl from 'assets/images/celoCircle.png'
 import scrollCircleLogoUrl from 'assets/images/celoCircle.png'
 import baseCircleLogoUrl from 'assets/images/celoCircle.png'
 import ethereumLogoUrl from 'assets/images/ethereum-logo.png'
@@ -8,6 +9,8 @@ import bnbSquareLogoUrl from 'assets/svg/bnb_square_logo.svg'
 import bnbLogo from 'assets/svg/bnb-logo.svg'
 import scrollLogo from 'assets/svg/celo_logo.svg'
 import baseLogo from 'assets/svg/celo_logo.svg'
+import celoLogo from 'assets/svg/celo_logo.svg'
+import celoSquareLogoUrl from 'assets/svg/celo_square_logo.svg'
 import scrollSquareLogoUrl from 'assets/svg/celo_square_logo.svg'
 import baseSquareLogoUrl from 'assets/svg/celo_square_logo.svg'
 import optimismSquareLogoUrl from 'assets/svg/optimism_square_logo.svg'
@@ -18,7 +21,7 @@ import ms from 'ms.macro'
 import { darkTheme } from 'theme/colors'
 
 import { SupportedChainId, SupportedL1ChainId, SupportedL2ChainId } from './chains'
-import { ARBITRUM_LIST, OPTIMISM_LIST, PLASMA_BNB_LIST } from './lists'
+import { ARBITRUM_LIST, CELO_LIST, OPTIMISM_LIST, PLASMA_BNB_LIST } from './lists'
 
 export const AVERAGE_L1_BLOCK_TIME = ms`12s`
 
@@ -163,6 +166,32 @@ const CHAIN_INFO: ChainInfoMap = {
     color: darkTheme.chain_137,
     backgroundColor: darkTheme.chain_137_background,
   },
+  [SupportedChainId.CELO]: {
+  networkType: NetworkType.L1,
+  blockWaitMsBeforeWarning: ms`10m`,
+  bridge: 'https://www.portalbridge.com/#/transfer',
+  docs: 'https://docs.celo.org/',
+  explorer: 'https://celoscan.io/',
+  infoLink: 'https://info.uniswap.org/#/celo/',
+  label: 'Celo',
+  logoUrl: celoLogo,
+  circleLogoUrl: celoCircleLogoUrl,
+  squareLogoUrl: celoSquareLogoUrl,
+  nativeCurrency: { name: 'Celo', symbol: 'CELO', decimals: 18 },
+  defaultListUrl: CELO_LIST,
+},
+[SupportedChainId.CELO_ALFAJORES]: {
+  networkType: NetworkType.L1,
+  blockWaitMsBeforeWarning: ms`10m`,
+  bridge: 'https://www.portalbridge.com/#/transfer',
+  docs: 'https://docs.celo.org/',
+  explorer: 'https://alfajores-blockscout.celo-testnet.org/',
+  infoLink: 'https://info.uniswap.org/#/celo/',
+  label: 'Celo Alfajores',
+  logoUrl: celoLogo,
+  nativeCurrency: { name: 'Celo', symbol: 'CELO', decimals: 18 },
+  defaultListUrl: CELO_LIST,
+},
   [SupportedChainId.POLYGON_MUMBAI]: {
     networkType: NetworkType.L1,
     blockWaitMsBeforeWarning: ms`10m`,
