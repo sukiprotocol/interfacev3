@@ -83,8 +83,6 @@ export const TESTNET_CHAIN_IDS = [
   SupportedChainId.POLYGON_MUMBAI,
   SupportedChainId.ARBITRUM_GOERLI,
   SupportedChainId.OPTIMISM_GOERLI,
-  SupportedChainId.SCROLL_ALPHA_TESTNET,
-  SupportedChainId.BASE_GOERLI_TESTNET,
 ] as const
 
 export type SupportedTestnetChainId = typeof TESTNET_CHAIN_IDS[number]

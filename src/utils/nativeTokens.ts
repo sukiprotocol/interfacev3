@@ -8,12 +8,13 @@ export function getNativeTokenDBAddress(chain: Chain): string | undefined {
     return undefined
   }
   switch (chain) {
-    case Chain.Celo:
+    case Chain.Scroll_alpha_testnet:
     case Chain.Polygon:
       return nativeOnChain(pageChainId).wrapped.address
     case Chain.Ethereum:
     case Chain.Arbitrum:
     case Chain.EthereumGoerli:
+    case Chain.Base_goerli_testnet:
     case Chain.Optimism:
     default:
       return undefined

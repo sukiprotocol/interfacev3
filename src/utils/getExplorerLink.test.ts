@@ -26,8 +26,11 @@ describe('#getExplorerLink', () => {
   it('polygon', () => {
     expect(getExplorerLink(137, 'abc', ExplorerDataType.ADDRESS)).toEqual('https://polygonscan.com/address/abc')
   })
-  it('celo', () => {
-    expect(getExplorerLink(42220, 'abc', ExplorerDataType.ADDRESS)).toEqual('https://celoscan.io/address/abc')
+  it('scroll_alpha_testnet', () => {
+    expect(getExplorerLink(534354, 'abc', ExplorerDataType.ADDRESS)).toEqual('https://blockscout.scroll.io/address/abc')
+  })
+  it('base_goerli_testnet', () => {
+    expect(getExplorerLink(84531, 'abc', ExplorerDataType.ADDRESS)).toEqual('https://goerli.basescan.org/address/abc')
   })
   it('goerli', () => {
     expect(getExplorerLink(5, 'abc', ExplorerDataType.ADDRESS)).toEqual('https://goerli.etherscan.io/address/abc')

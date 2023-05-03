@@ -61,8 +61,8 @@ export const CHAIN_ID_TO_BACKEND_NAME: { [key: number]: Chain } = {
   [SupportedChainId.GOERLI]: Chain.EthereumGoerli,
   [SupportedChainId.POLYGON]: Chain.Polygon,
   [SupportedChainId.POLYGON_MUMBAI]: Chain.Polygon,
-  [SupportedChainId.CELO]: Chain.Celo,
-  [SupportedChainId.CELO_ALFAJORES]: Chain.Celo,
+  [SupportedChainId.SCROLL_ALPHA_TESTNET]: Chain.Scroll_alpha_testnet,
+  [SupportedChainId.BASE_GOERLI_TESTNET]: Chain.Base_goerli_testnet,
   [SupportedChainId.ARBITRUM_ONE]: Chain.Arbitrum,
   [SupportedChainId.ARBITRUM_GOERLI]: Chain.Arbitrum,
   [SupportedChainId.OPTIMISM]: Chain.Optimism,
@@ -81,7 +81,8 @@ const GQL_CHAINS: number[] = [
   SupportedChainId.OPTIMISM,
   SupportedChainId.POLYGON,
   SupportedChainId.ARBITRUM_ONE,
-  SupportedChainId.CELO,
+  SupportedChainId.SCROLL_ALPHA_TESTNET,
+  SupportedChainId.BASE_GOERLI_TESTNET,
 ]
 
 export function isGqlSupportedChain(chainId: number | undefined): chainId is SupportedChainId {
@@ -108,7 +109,8 @@ export function gqlToCurrency(token: {
 const URL_CHAIN_PARAM_TO_BACKEND: { [key: string]: Chain } = {
   ethereum: Chain.Ethereum,
   polygon: Chain.Polygon,
-  celo: Chain.Celo,
+  scroll_alpha_testnet: Chain.Scroll_alpha_testnet,
+  base_goerli_testnet: Chain.Base_goerli_testnet,
   arbitrum: Chain.Arbitrum,
   optimism: Chain.Optimism,
   bnb: Chain.Bnb,
@@ -123,7 +125,8 @@ export const CHAIN_NAME_TO_CHAIN_ID: { [key in Chain]: SupportedChainId } = {
   [Chain.Ethereum]: SupportedChainId.MAINNET,
   [Chain.EthereumGoerli]: SupportedChainId.GOERLI,
   [Chain.Polygon]: SupportedChainId.POLYGON,
-  [Chain.Celo]: SupportedChainId.CELO,
+  [Chain.Scroll_alpha_testnet]: SupportedChainId.SCROLL_ALPHA_TESTNET,
+    [Chain.Base_goerli_testnet]: SupportedChainId.BASE_GOERLI_TESTNET,
   [Chain.Optimism]: SupportedChainId.OPTIMISM,
   [Chain.Arbitrum]: SupportedChainId.ARBITRUM_ONE,
   [Chain.UnknownChain]: SupportedChainId.MAINNET,

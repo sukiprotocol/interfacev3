@@ -7,14 +7,14 @@ import { useSingleContractWithCallData } from 'lib/hooks/multicall'
 import { useMemo } from 'react'
 import { InterfaceTrade, TradeState } from 'state/routing/types'
 
-import { isCelo } from '../constants/tokens'
+import { isScroll_Alpha_Testnet } from '../constants/tokens'
 import { useAllV3Routes } from './useAllV3Routes'
 import { useQuoter } from './useContract'
 
 const QUOTE_GAS_OVERRIDES: { [chainId: number]: number } = {
   [SupportedChainId.ARBITRUM_ONE]: 25_000_000,
   [SupportedChainId.ARBITRUM_GOERLI]: 25_000_000,
-  [SupportedChainId.CELO]: 50_000_000,
+  [SupportedChainId.SCROLL_ALPHA_TESTNET]: 50_000_000,
   [SupportedChainId.CELO_ALFAJORES]: 50_000_000,
   [SupportedChainId.POLYGON]: 40_000_000,
   [SupportedChainId.POLYGON_MUMBAI]: 40_000_000,

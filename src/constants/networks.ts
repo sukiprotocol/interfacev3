@@ -69,13 +69,13 @@ export const FALLBACK_URLS = {
     // "Safe" URLs
     'https://goerli.optimism.io',
   ],
-  [SupportedChainId.CELO]: [
+  [SupportedChainId.SCROLL_ALPHA_TESTNET]: [
     // "Safe" URLs
-    `https://forno.celo.org`,
+    `https://alpha-rpc.scroll.io/l2`,
   ],
-  [SupportedChainId.CELO_ALFAJORES]: [
+  [SupportedChainId.BASE_GOERLI_TESTNET]: [
     // "Safe" URLs
-    `https://alfajores-forno.celo-testnet.org`,
+    `https://goerli.base.org`,
   ],
   [SupportedChainId.BNB]: [
     // "Safe" URLs
@@ -125,7 +125,7 @@ export const RPC_URLS = {
     `https://polygon-mumbai.infura.io/v3/${INFURA_KEY}`,
     ...FALLBACK_URLS[SupportedChainId.POLYGON_MUMBAI],
   ],
-  [SupportedChainId.CELO]: FALLBACK_URLS[SupportedChainId.CELO],
-  [SupportedChainId.CELO_ALFAJORES]: FALLBACK_URLS[SupportedChainId.CELO_ALFAJORES],
+  [SupportedChainId.SCROLL_ALPHA_TESTNET]: FALLBACK_URLS[SupportedChainId.SCROLL_ALPHA_TESTNET],
+  [SupportedChainId.BASE_GOERLI_TESTNET]: FALLBACK_URLS[SupportedChainId.BASE_GOERLI_TESTNET],
   [SupportedChainId.BNB]: [QUICKNODE_RPC_URL, ...FALLBACK_URLS[SupportedChainId.BNB]],
 }
