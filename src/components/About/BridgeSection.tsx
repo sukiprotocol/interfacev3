@@ -1,17 +1,12 @@
-import { ButtonEmpty } from 'components/Button'
 import styled from 'styled-components/macro'
 import { BREAKPOINTS } from 'theme'
 
-import baseLogo from './images/base_logo.svg'
-import scrollLogo from './images/scroll_logo.svg'
-import lineaLogo from './images/linea_logo.svg'
-import shmLogo from './images/shm_logo.svg'
+import networkImg from './images/network.svg'
 
 const Banner = styled.div`
-  height: 340px;
   width: 100%;
   max-width: 1440px;
-  margin: 120px 0;
+  margin: 60px 0;
 
   display: flex;
   flex-direction: column;
@@ -20,7 +15,6 @@ const Banner = styled.div`
   padding: 32px 48px;
 
   @media screen and (min-width: ${BREAKPOINTS.lg}px) {
-    height: 140px;
     flex-direction: row;
   }
 `
@@ -31,15 +25,16 @@ const TextContainer = styled.div`
   flex: 1;
   flex-direction: column;
   justify-content: space-between;
+  margin: 10px 10px 0 0;
 `
 
 const HeaderText = styled.div`
   font-weight: 700;
-  font-size: 28px;
+  font-size: 36px;
   line-height: 36px;
 
   @media screen and (min-width: ${BREAKPOINTS.xl}px) {
-    font-size: 28px;
+    font-size: 36px;
     line-height: 36px;
   }
 `
@@ -60,56 +55,36 @@ const LogoIcons = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: left;
+  justify-content: center;
   gap: 12px;
   margin: 20px 0 0 0;
 `
 
 const LogoIcon = styled.a`
   display: flex;
-`
-
-const BannerButtonContainer = styled.div`
   width: 100%;
-  display: flex;
-  align-items: center;
+  height: auto;
 
-  transition: ${({ theme }) => `${theme.transition.duration.medium} ${theme.transition.timing.ease} opacity`};
-
-  &:hover {
-    opacity: 0.6;
+  img {
+    width: 320px;
+    height: auto;
   }
-
   @media screen and (min-width: ${BREAKPOINTS.lg}px) {
     width: auto;
   }
 `
 
-const BannerButton = styled(ButtonEmpty)`
-  color: white;
-  border: 1px solid white;
-`
-
-const DetailSection = () => {
+const BridgeSection = () => {
   return (
     <Banner>
       <TextContainer>
-        <HeaderText>Supported Chain</HeaderText>
-        <DescriptionText>EVM Chain: L1, L2</DescriptionText>
+        <HeaderText>Suki Bridge</HeaderText>
+        <DescriptionText>Suki Bridge is a scalable rollup-to-rollup general token bridge.</DescriptionText>
       </TextContainer>
       <TextContainer>
         <LogoIcons>
           <LogoIcon>
-            <img src={baseLogo} width={64} />
-          </LogoIcon>
-          <LogoIcon>
-            <img src={scrollLogo} width={64} />
-          </LogoIcon>
-          <LogoIcon>
-            <img src={lineaLogo} width={64} />
-          </LogoIcon>
-          <LogoIcon>
-            <img src={shmLogo} width={64} />
+            <img src={networkImg} width={180} />
           </LogoIcon>
         </LogoIcons>
       </TextContainer>
@@ -117,4 +92,4 @@ const DetailSection = () => {
   )
 }
 
-export default DetailSection
+export default BridgeSection

@@ -257,7 +257,8 @@ export const SearchBarDropdown = ({
           />
         ) : (
           <Box className={styles.notFoundContainer}>No NFT collections found.</Box>
-        ) */}
+        )
+    */}
 
       const currentState = () =>
         hasInput ? (
