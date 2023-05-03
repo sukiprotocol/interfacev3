@@ -1,18 +1,18 @@
 import bnbCircleLogoUrl from 'assets/images/bnbCircle.svg'
 import celoCircleLogoUrl from 'assets/images/celoCircle.png'
-import scrollCircleLogoUrl from 'assets/images/celoCircle.png'
-import baseCircleLogoUrl from 'assets/images/celoCircle.png'
+import scrollCircleLogoUrl from 'assets/images/scrollCircle.svg'
+import baseCircleLogoUrl from 'assets/images/baseCircle.svg'
 import ethereumLogoUrl from 'assets/images/ethereum-logo.png'
 import polygonCircleLogoUrl from 'assets/images/polygonCircle.png'
 import { default as arbitrumCircleLogoUrl, default as arbitrumLogoUrl } from 'assets/svg/arbitrum_logo.svg'
 import bnbSquareLogoUrl from 'assets/svg/bnb_square_logo.svg'
 import bnbLogo from 'assets/svg/bnb-logo.svg'
-import scrollLogo from 'assets/svg/celo_logo.svg'
-import baseLogo from 'assets/svg/celo_logo.svg'
+import scrollLogo from 'assets/svg/scroll_logo.svg'
+import baseLogo from 'assets/svg/base_logo.svg'
 import celoLogo from 'assets/svg/celo_logo.svg'
 import celoSquareLogoUrl from 'assets/svg/celo_square_logo.svg'
-import scrollSquareLogoUrl from 'assets/svg/celo_square_logo.svg'
-import baseSquareLogoUrl from 'assets/svg/celo_square_logo.svg'
+import scrollSquareLogoUrl from 'assets/svg/scroll_square_logo.svg'
+import baseSquareLogoUrl from 'assets/svg/base_square_logo.svg'
 import optimismSquareLogoUrl from 'assets/svg/optimism_square_logo.svg'
 import optimismLogoUrl from 'assets/svg/optimistic_ethereum.svg'
 import polygonSquareLogoUrl from 'assets/svg/polygon_square_logo.svg'
@@ -226,6 +226,8 @@ const CHAIN_INFO: ChainInfoMap = {
     infoLink: 'https://info.sukiswap.com/#/base/',
     label: 'Base',
     logoUrl: baseLogo,
+    circleLogoUrl: baseCircleLogoUrl,
+    squareLogoUrl: baseSquareLogoUrl,
     nativeCurrency: { name: 'Ethereum', symbol: 'ETH', decimals: 18 },
     defaultListUrl: ARBITRUM_LIST,
   },
