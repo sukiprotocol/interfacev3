@@ -77,7 +77,7 @@ export default function RadialGradientByChainUpdater(): null {
         backgroundRadialGradientElement.style.background = darkMode ? polygonDarkGradient : polygonLightGradient
         break
       }
-      case SupportedChainId.CELO:
+      case SupportedChainId.SCROLL_ALPHA_TESTNET:
       case SupportedChainId.CELO_ALFAJORES: {
         setBackground(backgroundResetStyles)
         const celoLightGradient =

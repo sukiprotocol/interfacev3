@@ -61,6 +61,8 @@ export const CHAIN_ID_TO_BACKEND_NAME: { [key: number]: Chain } = {
   [SupportedChainId.GOERLI]: Chain.EthereumGoerli,
   [SupportedChainId.POLYGON]: Chain.Polygon,
   [SupportedChainId.POLYGON_MUMBAI]: Chain.Polygon,
+//  [SupportedChainId.SCROLL_ALPHA_TESTNET]: Chain.Scroll_alpha_testnet,
+//  [SupportedChainId.BASE_GOERLI_TESTNET]: Chain.Base_goerli_testnet,
   [SupportedChainId.CELO]: Chain.Celo,
   [SupportedChainId.CELO_ALFAJORES]: Chain.Celo,
   [SupportedChainId.ARBITRUM_ONE]: Chain.Arbitrum,
@@ -109,6 +111,8 @@ const URL_CHAIN_PARAM_TO_BACKEND: { [key: string]: Chain } = {
   ethereum: Chain.Ethereum,
   polygon: Chain.Polygon,
   celo: Chain.Celo,
+//  scroll_alpha_testnet: Chain.Scroll_alpha_testnet,
+//  base_goerli_testnet: Chain.Base_goerli_testnet,
   arbitrum: Chain.Arbitrum,
   optimism: Chain.Optimism,
   bnb: Chain.Bnb,
@@ -134,7 +138,7 @@ export function fromGraphQLChain(chain: Chain): SupportedChainId {
   return CHAIN_NAME_TO_CHAIN_ID[chain]
 }
 
-export const BACKEND_CHAIN_NAMES: Chain[] = [Chain.Ethereum, Chain.Polygon, Chain.Optimism, Chain.Arbitrum, Chain.Celo]
+export const BACKEND_CHAIN_NAMES: Chain[] = [Chain.Ethereum, Chain.Polygon, Chain.Optimism, Chain.Arbitrum, Chain.Celo,]
 
 export function getTokenDetailsURL({
   address,

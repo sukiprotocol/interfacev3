@@ -7,11 +7,6 @@ import {
   BTC_BSC,
   BUSD_BSC,
   CAKE_BSC,
-  CEUR_CELO,
-  CEUR_CELO_ALFAJORES,
-  CMC02_CELO,
-  CUSD_CELO,
-  CUSD_CELO_ALFAJORES,
   DAI,
   DAI_ARBITRUM_ONE,
   DAI_BSC,
@@ -25,8 +20,8 @@ import {
   FXS,
   MATIC_BSC,
   nativeOnChain,
-  PORTAL_ETH_CELO,
-  PORTAL_USDC_CELO,
+  PORTAL_ETH_SCROLL,
+  PORTAL_ETH_BASE,
   renBTC,
   rETH2,
   sETH2,
@@ -105,7 +100,8 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     MATIC_BSC,
     CAKE_BSC,
   ],
-  [SupportedChainId.CELO]: [CUSD_CELO, CEUR_CELO, CMC02_CELO, PORTAL_USDC_CELO, PORTAL_ETH_CELO],
+  [SupportedChainId.SCROLL_ALPHA_TESTNET]: [ PORTAL_ETH_SCROLL],
+  [SupportedChainId.BASE_GOERLI_TESTNET]: [ PORTAL_ETH_BASE],
 }
 export const ADDITIONAL_BASES: { [chainId: number]: { [tokenAddress: string]: Token[] } } = {
   [SupportedChainId.MAINNET]: {
@@ -181,18 +177,13 @@ export const COMMON_BASES: ChainCurrencyList = {
     WETH_POLYGON_MUMBAI,
   ],
 
-  [SupportedChainId.CELO]: [
-    nativeOnChain(SupportedChainId.CELO),
-    CEUR_CELO,
-    CUSD_CELO,
-    PORTAL_ETH_CELO,
-    PORTAL_USDC_CELO,
-    CMC02_CELO,
-  ],
-  [SupportedChainId.CELO_ALFAJORES]: [
-    nativeOnChain(SupportedChainId.CELO_ALFAJORES),
-    CUSD_CELO_ALFAJORES,
-    CEUR_CELO_ALFAJORES,
+  [SupportedChainId.SCROLL_ALPHA_TESTNET]: [
+    nativeOnChain(SupportedChainId.SCROLL_ALPHA_TESTNET),
+    PORTAL_ETH_SCROLL,
+    ],
+  [SupportedChainId.BASE_GOERLI_TESTNET]: [
+    nativeOnChain(SupportedChainId.BASE_GOERLI_TESTNET),
+    PORTAL_ETH_BASE,
   ],
 
   [SupportedChainId.BNB]: [

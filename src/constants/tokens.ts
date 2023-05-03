@@ -67,6 +67,20 @@ const USDC_POLYGON_MUMBAI = new Token(
   'USDC',
   'USD//C'
 )
+export const PORTAL_ETH_SCROLL = new Token(
+  SupportedChainId.SCROLL_ALPHA_TESTNET,
+  '0x66803FB87aBd4aaC3cbB3fAd7C3aa01f6F3FB207',
+  18,
+  'ETH',
+  'Scroll Testnet Alpha Ether'
+)
+export const PORTAL_ETH_BASE = new Token(
+  SupportedChainId.BASE_GOERLI_TESTNET,
+  '0x66803FB87aBd4aaC3cbB3fAd7C3aa01f6F3FB207',
+  18,
+  'ETH',
+  'Base Testnet Ether'
+)
 export const PORTAL_USDC_CELO = new Token(
   SupportedChainId.CELO,
   '0x37f750B7cC259A2f741AF45294f6a16572CF5cAd',
@@ -525,6 +539,8 @@ export const TOKEN_SHORTHANDS: { [shorthand: string]: { [chainId in SupportedCha
     [SupportedChainId.POLYGON]: USDC_POLYGON.address,
     [SupportedChainId.POLYGON_MUMBAI]: USDC_POLYGON_MUMBAI.address,
     [SupportedChainId.BNB]: USDC_BSC.address,
+    [SupportedChainId.SCROLL_ALPHA_TESTNET]: PORTAL_ETH_SCROLL.address,
+    [SupportedChainId.BASE_GOERLI_TESTNET]: PORTAL_ETH_BASE.address,
     [SupportedChainId.CELO]: PORTAL_USDC_CELO.address,
     [SupportedChainId.CELO_ALFAJORES]: PORTAL_USDC_CELO.address,
     [SupportedChainId.GOERLI]: USDC_GOERLI.address,

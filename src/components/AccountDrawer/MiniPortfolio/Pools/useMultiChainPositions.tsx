@@ -46,7 +46,8 @@ const DEFAULT_CHAINS = [
   SupportedChainId.ARBITRUM_ONE,
   SupportedChainId.OPTIMISM,
   SupportedChainId.POLYGON,
-  SupportedChainId.CELO,
+  SupportedChainId.SCROLL_ALPHA_TESTNET,
+  SupportedChainId.BASE_GOERLI_TESTNET,
 ]
 
 type UseMultiChainPositionsData = { positions: PositionInfo[] | undefined; loading: boolean }
