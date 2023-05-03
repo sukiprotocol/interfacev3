@@ -2,10 +2,11 @@ import { Trans } from '@lingui/macro'
 import { Trace, TraceEvent } from '@uniswap/analytics'
 import { BrowserEvent, InterfaceElementName, InterfacePageName, SharedEventName } from '@uniswap/analytics-events'
 import { AboutFooter } from 'components/About/AboutFooter'
+import BridgeSection from 'components/About/BridgeSection'
 import Card, { CardType } from 'components/About/Card'
 import { MAIN_CARDS, MORE_CARDS } from 'components/About/constants'
 import ProtocolBanner from 'components/About/ProtocolBanner'
-import DetailSection from 'components/About/DetailSection'
+import SupportSection from 'components/About/SupportSection'
 import { BaseButton } from 'components/Button'
 import { useSwapWidgetEnabled } from 'featureFlags/flags/swapWidget'
 import { useAtomValue } from 'jotai/utils'
@@ -401,7 +402,8 @@ export default function Landing() {
                 <Card {...card} icon={isDarkMode ? darkIcon : lightIcon} key={card.title} type={CardType.Secondary} />
               ))}
             </CardGrid>
-            <DetailSection />
+            <BridgeSection />
+            <SupportSection />
             <ProtocolBanner />
             <AboutFooter />
           </AboutContentContainer>
