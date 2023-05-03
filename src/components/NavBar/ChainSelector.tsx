@@ -25,6 +25,7 @@ const NETWORK_SELECTOR_CHAINS = [
   SupportedChainId.POLYGON,
   SupportedChainId.OPTIMISM,
   SupportedChainId.ARBITRUM_ONE,
+  SupportedChainId.CELO,
   SupportedChainId.BASE_GOERLI_TESTNET,
   SupportedChainId.SCROLL_ALPHA_TESTNET,
   SupportedChainId.BNB,

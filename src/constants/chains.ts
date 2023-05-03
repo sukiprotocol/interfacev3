@@ -19,7 +19,7 @@ export enum SupportedChainId {
   POLYGON = 137,
   POLYGON_MUMBAI = 80001,
 
-  SCROLL_ALPHA_TESTNET = 534354,
+  SCROLL_ALPHA_TESTNET = 534353,
   BASE_GOERLI_TESTNET = 84531,
   CELO = 42220,
   CELO_ALFAJORES = 44787,
@@ -87,6 +87,8 @@ export const TESTNET_CHAIN_IDS = [
   SupportedChainId.POLYGON_MUMBAI,
   SupportedChainId.ARBITRUM_GOERLI,
   SupportedChainId.OPTIMISM_GOERLI,
+  SupportedChainId.SCROLL_ALPHA_TESTNET,
+  SupportedChainId.BASE_GOERLI_TESTNET,
 ] as const
 
 export type SupportedTestnetChainId = typeof TESTNET_CHAIN_IDS[number]

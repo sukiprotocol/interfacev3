@@ -35,6 +35,8 @@ const SHOULD_SHOW_ALERT = {
   [SupportedChainId.ARBITRUM_GOERLI]: true,
   [SupportedChainId.POLYGON]: true,
   [SupportedChainId.POLYGON_MUMBAI]: true,
+  [SupportedChainId.CELO]: true,
+  [SupportedChainId.CELO_ALFAJORES]: true,
   [SupportedChainId.SCROLL_ALPHA_TESTNET]: true,
   [SupportedChainId.BASE_GOERLI_TESTNET]: true,
   [SupportedChainId.BNB]: true,
@@ -54,6 +56,8 @@ const BG_COLORS_BY_DARK_MODE_AND_CHAIN_ID: {
       'radial-gradient(182.71% 150.59% at 2.81% 7.69%, rgba(90, 190, 170, 0.15) 0%, rgba(80, 160, 40, 0.15) 100%)',
     [SupportedChainId.BASE_GOERLI_TESTNET]:
       'radial-gradient(182.71% 150.59% at 2.81% 7.69%, rgba(90, 190, 170, 0.15) 0%, rgba(80, 160, 40, 0.15) 100%)',
+    [SupportedChainId.CELO]:
+        'radial-gradient(182.71% 150.59% at 2.81% 7.69%, rgba(90, 190, 170, 0.15) 0%, rgba(80, 160, 40, 0.15) 100%)',
     [SupportedChainId.BNB]:
       'radial-gradient(182.71% 150.59% at 2.81% 7.69%, rgba(240, 185, 11, 0.16) 0%, rgba(255, 168, 0, 0.16) 100%)',
     [SupportedChainId.OPTIMISM]:
@@ -70,10 +74,12 @@ const BG_COLORS_BY_DARK_MODE_AND_CHAIN_ID: {
       'radial-gradient(182.71% 205.59% at 2.81% 7.69%, rgba(130, 71, 229, 0.2) 0%, rgba(167, 202, 255, 0.2) 100%)',
     [SupportedChainId.POLYGON_MUMBAI]:
       'radial-gradient(182.71% 205.59% at 2.81% 7.69%, rgba(130, 71, 229, 0.2) 0%, rgba(167, 202, 255, 0.2) 100%)',
-    [SupportedChainId.BASE_GOERLI_TESTNET]:
-      'radial-gradient(182.71% 150.59% at 2.81% 7.69%, rgba(63, 208, 137, 0.15) 0%, rgba(49, 205, 50, 0.15) 100%)',
     [SupportedChainId.SCROLL_ALPHA_TESTNET]:
       'radial-gradient(182.71% 150.59% at 2.81% 7.69%, rgba(63, 208, 137, 0.15) 0%, rgba(49, 205, 50, 0.15) 100%)',
+    [SupportedChainId.CELO]:
+        'radial-gradient(182.71% 150.59% at 2.81% 7.69%, rgba(63, 208, 137, 0.15) 0%, rgba(49, 205, 50, 0.15) 100%)',
+    [SupportedChainId.BASE_GOERLI_TESTNET]:
+        'radial-gradient(182.71% 150.59% at 2.81% 7.69%, rgba(63, 208, 137, 0.15) 0%, rgba(49, 205, 50, 0.15) 100%)',
     [SupportedChainId.BNB]:
       'radial-gradient(182.71% 150.59% at 2.81% 7.69%, rgba(240, 185, 11, 0.16) 0%, rgba(255, 168, 0, 0.16) 100%)',
     [SupportedChainId.OPTIMISM]:
@@ -138,6 +144,8 @@ const TEXT_COLORS: { [chainId in NetworkAlertChains]: string } = {
   [SupportedChainId.POLYGON_MUMBAI]: 'rgba(130, 71, 229)',
   [SupportedChainId.BASE_GOERLI_TESTNET]: 'rgba(53, 178, 97)',
   [SupportedChainId.SCROLL_ALPHA_TESTNET]: 'rgba(53, 178, 97)',
+  [SupportedChainId.CELO]: 'rgba(53, 178, 97)',
+  [SupportedChainId.CELO_ALFAJORES]: 'rgba(53, 178, 97)',
   [SupportedChainId.OPTIMISM]: '#ff3856',
   [SupportedChainId.OPTIMISM_GOERLI]: '#ff3856',
   [SupportedChainId.ARBITRUM_ONE]: '#0490ed',
