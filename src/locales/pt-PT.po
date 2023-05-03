@@ -2094,7 +2094,7 @@ msgid "Top pools"
 msgstr "Melhores pools"
 
 #: src/pages/Tokens/index.tsx
-msgid "Top tokens on Uniswap"
+msgid "Top tokens on SukuSwap"
 msgstr ""
 
 #: src/nft/components/bag/BagFooter.tsx
