@@ -2,7 +2,7 @@ import styled from 'styled-components/macro'
 
 import { ReactComponent as DiscordI } from './images/discord.svg'
 import { ReactComponent as GithubI } from './images/github.svg'
-import { ReactComponent as TelegramI } from './images/Telegram.svg'
+import { ReactComponent as TelegramI } from './images/telegram.svg'
 import { ReactComponent as TwitterI } from './images/twitter-safe.svg'
 
 export const DiscordIcon = styled(DiscordI)<{ size?: number; fill?: string }>`
