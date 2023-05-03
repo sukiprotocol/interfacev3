@@ -30,8 +30,8 @@ const StyledCard = styled.div<{ isDarkMode: boolean; backgroundImgSrc?: string; 
   padding: 24px;
   height: 212px;
   border-radius: 24px;
-  border: 1px solid ${({ theme, type }) => (type === CardType.Primary ? 'transparent' : theme.backgroundOutline)};
-  box-shadow: 0px 10px 24px 0px rgba(51, 53, 72, 0.04);
+  // border: 1px solid ${({ theme, type }) => (type === CardType.Primary ? 'transparent' : theme.backgroundOutline)};
+  // box-shadow: 0px 10px 24px 0px rgba(51, 53, 72, 0.04);
   transition: ${({ theme }) => `${theme.transition.duration.medium} ${theme.transition.timing.ease} border`};
 
   &:hover {

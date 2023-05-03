@@ -5,6 +5,7 @@ import { AboutFooter } from 'components/About/AboutFooter'
 import Card, { CardType } from 'components/About/Card'
 import { MAIN_CARDS, MORE_CARDS } from 'components/About/constants'
 import ProtocolBanner from 'components/About/ProtocolBanner'
+import DetailSection from 'components/About/DetailSection'
 import { BaseButton } from 'components/Button'
 import { useSwapWidgetEnabled } from 'featureFlags/flags/swapWidget'
 import { useAtomValue } from 'jotai/utils'
@@ -217,8 +218,8 @@ const AboutContentContainer = styled.div<{ isDarkMode: boolean }>`
   width: 100%;
   background: ${({ isDarkMode }) =>
     isDarkMode
-      ? 'linear-gradient(179.82deg, rgba(0, 0, 0, 0) 0.16%, #050026 99.85%)'
-      : 'linear-gradient(179.82deg, rgba(255, 255, 255, 0) 0.16%, #eaeaea 99.85%)'};
+      ? 'linear-gradient(179.82deg, rgba(0, 0, 0, 0) 0.16%, #090813 90%)'
+      : 'linear-gradient(179.82deg, rgba(255, 255, 255, 0) 0.16%, #eaeaea 90%)'};
   @media screen and (min-width: ${BREAKPOINTS.md}px) {
     padding: 0 96px 5rem;
   }
@@ -229,6 +230,7 @@ const CardGrid = styled.div<{ cols: number }>`
   gap: 12px;
   width: 100%;
   padding: 24px 0 0;
+  margin: 30px 0;
   max-width: 1440px;
   scroll-margin: ${({ theme }) => `${theme.navHeight}px 0 0`};
 
@@ -399,6 +401,7 @@ export default function Landing() {
                 <Card {...card} icon={isDarkMode ? darkIcon : lightIcon} key={card.title} type={CardType.Secondary} />
               ))}
             </CardGrid>
+            <DetailSection />
             <ProtocolBanner />
             <AboutFooter />
           </AboutContentContainer>
