@@ -7,13 +7,14 @@ import { useIsPoolsPage } from 'hooks/useIsPoolsPage'
 import { useAtomValue } from 'jotai/utils'
 import { Box } from 'nft/components/Box'
 import { Row } from 'nft/components/Flex'
-import { NftIcon, PoolIcon, SwapIcon, TokenIcon, UniIcon } from 'nft/components/icons'
+import { AirdropIcon, NftIcon, PoolIcon, SwapIcon, TokenIcon, RewardIcon, UniIcon } from 'nft/components/icons'
 import { useProfilePageState } from 'nft/hooks'
 import { ProfilePageStateType } from 'nft/types'
 import { ReactNode } from 'react'
 import { NavLink, NavLinkProps, useLocation, useNavigate } from 'react-router-dom'
 import { shouldDisableNFTRoutesAtom } from 'state/application/atoms'
 import styled from 'styled-components/macro'
+import { BREAKPOINTS, ExternalLink } from 'theme'
 
 import { Bag } from './Bag'
 import Blur from './Blur'
@@ -27,6 +28,50 @@ const Nav = styled.nav`
   width: 100%;
   height: ${({ theme }) => theme.navHeight}px;
   z-index: 2;
+`
+const ExternalTextLink = styled(ExternalLink)`
+  font-size: 16px;
+  line-height: 20px;
+  color: none;
+  stroke: none;
+`
+
+const ButtonFaucet = styled.div`
+  padding: 8px 12px;
+  border-radius: 16px;
+  background: ${({ theme }) => theme.accentAction};
+  border: none;
+  color: ${({ theme }) => theme.white};
+  transition: ${({ theme }) => `all ${theme.transition.duration.medium} ${theme.transition.timing.ease}`};
+
+  &:hover {
+    box-shadow: 0px 0px 16px 0px #4C82FB;
+  }
+`
+
+const ButtonCTA = styled.div`
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: linear-gradient(93.06deg, #0bb481 2.66%, #6a83ff 98.99%);
+  border: none;
+  color: ${({ theme }) => theme.white};
+  transition: ${({ theme }) => `all ${theme.transition.duration.medium} ${theme.transition.timing.ease}`};
+
+  &:hover {
+    box-shadow: 0px 0px 16px 0px #0bb481;
+  }
+`
+
+const ButtonCTAText = styled(ExternalLink)`
+  color: ${({ theme }) => theme.textPrimary};
+  margin: 0px;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  @media screen and (min-width: ${BREAKPOINTS.sm}px) {
+    font-size: 16px;
+  }
 `
 
 interface MenuItemProps {
@@ -103,7 +148,7 @@ const Navbar = ({ blur }: { blur: boolean }) => {
           <Box className={styles.leftSideContainer}>
             <Box className={styles.logoContainer}>
               <UniIcon
-                width="166"
+                width="48"
                 height="48"
                 data-testid="uniswap-logo"
                 className={styles.logo}
@@ -131,6 +176,30 @@ const Navbar = ({ blur }: { blur: boolean }) => {
             <Row gap="12">
               <Box position="relative" display={{ sm: 'flex', navSearchInputVisible: 'none' }}>
                 <SearchBar />
+              </Box>
+              <Box className={styles.buttonContainer}>
+                <ButtonCTA>
+                  <ButtonCTAText href="https://sukiswap.com">
+                    <Trans>Reward</Trans>
+                  </ButtonCTAText>
+                </ButtonCTA>
+              </Box>
+              <Box className={styles.buttonContainer}>
+                <ButtonFaucet>
+                  <ButtonCTAText href="https://sukiswap.com">
+                    <Trans>Faucet</Trans>
+                  </ButtonCTAText>
+                </ButtonFaucet>
+              </Box>
+              <Box position="relative" display={{ sm: 'flex', navSearchInputVisible: 'none' }}>
+                <ExternalTextLink href="https://sukiswap.com">
+                  <RewardIcon width={24} height={24} />
+                </ExternalTextLink>
+              </Box>
+              <Box position="relative" display={{ sm: 'flex', navSearchInputVisible: 'none' }}>
+                <ExternalTextLink href="https://sukiswap.com">
+                  <AirdropIcon width={24} height={24} />
+                </ExternalTextLink>
               </Box>
               {isNftPage && sellPageState !== ProfilePageStateType.LISTING && <Bag />}
               {!isNftPage && (

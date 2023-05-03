@@ -48,6 +48,17 @@ export const searchContainer = style([
   }),
 ])
 
+export const buttonContainer = style([
+  sprinkles({
+    flex: '1',
+    flexShrink: '1',
+    justifyContent: { lg: 'flex-end', xl: 'center' },
+    display: { sm: 'none', navSearchInputVisible: 'flex' },
+    alignSelf: 'center',
+    alignItems: 'flex-start',
+  }),
+])
+
 export const rightSideContainer = style([
   baseSideContainer,
   sprinkles({
