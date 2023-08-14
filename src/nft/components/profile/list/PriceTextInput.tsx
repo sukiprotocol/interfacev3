@@ -10,7 +10,7 @@ import { WalletAsset } from 'nft/types'
 import { formatEth } from 'nft/utils/currency'
 import { Dispatch, useRef, useState } from 'react'
 import { AlertTriangle, Link } from 'react-feather'
-import styled, { useTheme } from 'styled-components/macro'
+import styled, { useTheme } from 'styled-components'
 import { BREAKPOINTS } from 'theme'
 import { colors } from 'theme/colors'
 
@@ -32,7 +32,7 @@ const InputWrapper = styled(Row)<{ borderColor: string }>`
   box-sizing: border-box;
 `
 
-const CurrencyWrapper = styled.div<{ listPrice: number | undefined }>`
+const CurrencyWrapper = styled.div<{ listPrice?: number }>`
   color: ${({ listPrice, theme }) => (listPrice ? theme.textPrimary : theme.textSecondary)};
 `
 

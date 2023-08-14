@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/macro'
-import { Trace, TraceEvent } from '@uniswap/analytics'
 import { BrowserEvent, InterfaceElementName, InterfacePageName, SharedEventName } from '@uniswap/analytics-events'
+import { Trace, TraceEvent } from 'analytics'
 import { AboutFooter } from 'components/About/AboutFooter'
 import BridgeSection from 'components/About/BridgeSection'
 import Card, { CardType } from 'components/About/Card'
@@ -8,22 +8,24 @@ import { MAIN_CARDS, MORE_CARDS } from 'components/About/constants'
 import ProtocolBanner from 'components/About/ProtocolBanner'
 import SupportSection from 'components/About/SupportSection'
 import { BaseButton } from 'components/Button'
-import { useSwapWidgetEnabled } from 'featureFlags/flags/swapWidget'
-import { useAtomValue } from 'jotai/utils'
+import { AppleLogo } from 'components/Logo/AppleLogo'
+import { useDisableNFTRoutes } from 'hooks/useDisableNFTRoutes'
 import Swap from 'pages/Swap'
+import { RedirectPathToSwapOnly } from 'pages/Swap/redirects'
 import { parse } from 'qs'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { ArrowDownCircle } from 'react-feather'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Link as NativeLink } from 'react-router-dom'
-import { shouldDisableNFTRoutesAtom } from 'state/application/atoms'
 import { useAppSelector } from 'state/hooks'
-import styled, { css } from 'styled-components/macro'
+import styled, { css } from 'styled-components'
 import { BREAKPOINTS } from 'theme'
 import { useIsDarkMode } from 'theme/components/ThemeToggle'
+import { TRANSITION_DURATIONS } from 'theme/styles'
 import { Z_INDEX } from 'theme/zIndex'
+import { getDownloadAppLinkProps } from 'utils/openDownloadApp'
 
-const PageContainer = styled.div<{ isDarkMode: boolean }>`
+const PageContainer = styled.div`
   position: absolute;
   top: 0;
   padding: ${({ theme }) => theme.navHeight}px 0px 0px 0px;
@@ -33,11 +35,6 @@ const PageContainer = styled.div<{ isDarkMode: boolean }>`
   align-items: center;
   scroll-behavior: smooth;
   overflow-x: hidden;
-
-  background: ${({ isDarkMode }) =>
-    isDarkMode
-      ? 'linear-gradient(rgba(8, 10, 24, 0) 0%, rgb(8 10 24 / 100%) 45%)'
-      : 'linear-gradient(rgba(255, 255, 255, 0) 0%, rgb(255 255 255 /100%) 45%)'};
 `
 
 const Gradient = styled.div<{ isDarkMode: boolean }>`
@@ -49,10 +46,14 @@ const Gradient = styled.div<{ isDarkMode: boolean }>`
   bottom: 0;
   width: 100%;
   min-height: 550px;
-  background: ${({ isDarkMode }) =>
+  ${({ isDarkMode }) =>
     isDarkMode
-      ? 'linear-gradient(rgba(8, 10, 24, 0) 0%, rgb(8 10 24 / 100%) 45%)'
-      : 'linear-gradient(rgba(255, 255, 255, 0) 0%, rgb(255 255 255 /100%) 45%)'};
+      ? css`
+          background: linear-gradient(rgba(8, 10, 24, 0) 0%, rgb(8 10 24 / 100%) 45%);
+        `
+      : css`
+          background: linear-gradient(rgba(255, 255, 255, 0) 0%, rgb(255 255 255 /100%) 45%);
+        `};
   z-index: ${Z_INDEX.under_dropdown};
   pointer-events: none;
   height: ${({ theme }) => `calc(100vh - ${theme.mobileBottomBarHeight}px)`};
@@ -114,7 +115,7 @@ const TitleText = styled.h1<{ isDarkMode: boolean }>`
   font-weight: 700;
   text-align: center;
   margin: 0 0 24px;
-  background: ${({ isDarkMode }) =>
+  ${({ isDarkMode }) =>
     isDarkMode
       ? 'linear-gradient(20deg, rgba(104, 144, 155, 1) 10%, rgba(0, 156, 109, 1) 100%)'
       : 'linear-gradient(10deg, rgba(37, 200, 151, 1) 0%, rgba(114, 221, 189, 1) 100%)'};
@@ -191,7 +192,7 @@ const LearnMoreContainer = styled.div`
   cursor: pointer;
   font-size: 20px;
   font-weight: 600;
-  margin: 36px 0 0;
+  margin: 36px 0;
   display: flex;
   visibility: hidden;
   pointer-events: auto;
@@ -217,7 +218,7 @@ const AboutContentContainer = styled.div<{ isDarkMode: boolean }>`
   align-items: center;
   padding: 0 24px 5rem;
   width: 100%;
-  background: ${({ isDarkMode }) =>
+  ${({ isDarkMode }) =>
     isDarkMode
       ? 'linear-gradient(179.82deg, rgba(0, 0, 0, 0) 0.16%, #090813 90%)'
       : 'linear-gradient(179.82deg, rgba(255, 255, 255, 0) 0.16%, #eaeaea 90%)'};
@@ -292,56 +293,77 @@ const Link = styled(NativeLink)`
   ${LinkCss}
 `
 
-const WidgetLandingLink = styled(NativeLink)`
-  ${LinkCss}
-  ${SwapCss}
-`
-
 export default function Landing() {
   const isDarkMode = useIsDarkMode()
-
   const cardsRef = useRef<HTMLDivElement>(null)
-
-  const [showContent, setShowContent] = useState(false)
   const selectedWallet = useAppSelector((state) => state.user.selectedWallet)
+  const shouldDisableNFTRoutes = useDisableNFTRoutes()
+  const cards = useMemo(
+    () => MAIN_CARDS.filter((card) => !(shouldDisableNFTRoutes && card.to.startsWith('/nft'))),
+    [shouldDisableNFTRoutes]
+  )
+
+  const [accountDrawerOpen] = useAccountDrawer()
   const navigate = useNavigate()
-  const location = useLocation()
-  const queryParams = parse(location.search, {
-    ignoreQueryPrefix: true,
-  })
-
-  const swapWidgetEnabled = useSwapWidgetEnabled()
-
-  // This can be simplified significantly once the flag is removed! For now being explicit is clearer.
   useEffect(() => {
-    if (queryParams.intro || !selectedWallet) {
-      setShowContent(true)
-    } else {
-      navigate('/swap')
+    if (accountDrawerOpen) {
+      setTimeout(() => {
+        navigate('/swap')
+      }, TRANSITION_DURATIONS.fast)
     }
-  }, [navigate, selectedWallet, queryParams.intro])
+  }, [accountDrawerOpen, navigate])
 
-  const shouldDisableNFTRoutes = useAtomValue(shouldDisableNFTRoutesAtom)
+  const queryParams = parse(useLocation().search, { ignoreQueryPrefix: true })
+  if (selectedWallet && !queryParams.intro) {
+    return <RedirectPathToSwapOnly />
+  }
 
   return (
     <Trace page={InterfacePageName.LANDING_PAGE} shouldLogImpression>
-      {showContent && (
-        <PageContainer isDarkMode={isDarkMode} data-testid="landing-page">
-          <LandingSwapContainer>
+      <PageContainer data-testid="landing-page">
+        <LandingSwapContainer>
+          <TraceEvent
+            events={[BrowserEvent.onClick]}
+            name={SharedEventName.ELEMENT_CLICKED}
+            element={InterfaceElementName.LANDING_PAGE_SWAP_ELEMENT}
+          >
+            <Link to="/swap">
+              <LandingSwap />
+            </Link>
+          </TraceEvent>
+        </LandingSwapContainer>
+        <Gradient isDarkMode={isDarkMode} />
+        <GlowContainer>
+          <Glow />
+        </GlowContainer>
+        <ContentContainer isDarkMode={isDarkMode}>
+          <TitleText isDarkMode={isDarkMode}>
+            {shouldDisableNFTRoutes ? (
+              <Trans>Trade crypto with confidence</Trans>
+            ) : (
+              <Trans>Trade crypto and NFTs with confidence</Trans>
+            )}
+          </TitleText>
+          <SubTextContainer>
+            <SubText>
+              {shouldDisableNFTRoutes ? (
+                <Trans>Buy, sell, and explore tokens</Trans>
+              ) : (
+                <Trans>Buy, sell, and explore tokens and NFTs</Trans>
+              )}
+            </SubText>
+          </SubTextContainer>
+          <ActionsContainer>
             <TraceEvent
               events={[BrowserEvent.onClick]}
               name={SharedEventName.ELEMENT_CLICKED}
-              element={InterfaceElementName.LANDING_PAGE_SWAP_ELEMENT}
+              element={InterfaceElementName.CONTINUE_BUTTON}
             >
-              {swapWidgetEnabled ? (
-                <WidgetLandingLink to="/swap">
-                  <Swap />
-                </WidgetLandingLink>
-              ) : (
-                <Link to="/swap">
-                  <LandingSwap />
-                </Link>
-              )}
+              <ButtonCTA as={Link} to="/swap">
+                <ButtonCTAText>
+                  <Trans>Get started</Trans>
+                </ButtonCTAText>
+              </ButtonCTA>
             </TraceEvent>
           </LandingSwapContainer>
           <Gradient isDarkMode={isDarkMode} />
@@ -412,3 +434,18 @@ export default function Landing() {
     </Trace>
   )
 }
+
+const DownloadWalletLink = styled.a`
+  display: inline-flex;
+  gap: 8px;
+  color: ${({ theme }) => theme.textSecondary};
+  text-decoration: none;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  text-align: center;
+
+  :hover {
+    color: ${({ theme }) => theme.textTertiary};
+  }
+`

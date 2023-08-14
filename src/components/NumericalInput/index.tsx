@@ -1,7 +1,6 @@
 import React from 'react'
-import styled from 'styled-components/macro'
-
-import { escapeRegExp } from '../../utils'
+import styled from 'styled-components'
+import { escapeRegExp } from 'utils'
 
 const StyledInput = styled.input<{ error?: boolean; fontSize?: string; align?: string }>`
   color: ${({ error, theme }) => (error ? theme.accentFailure : theme.textPrimary)};
@@ -53,7 +52,7 @@ export const Input = React.memo(function InnerInput({
   error?: boolean
   fontSize?: string
   align?: 'right' | 'left'
-  prependSymbol?: string | undefined
+  prependSymbol?: string
 } & Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'onChange' | 'as'>) {
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {

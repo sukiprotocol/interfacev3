@@ -1,19 +1,20 @@
-import { Currency, Percent, TradeType } from '@uniswap/sdk-core'
+import { Percent } from '@uniswap/sdk-core'
 import { PermitInput, TokenTradeRoutesInput, TokenTradeType } from 'graphql/data/__generated__/types-and-hooks'
 import { Allowance } from 'hooks/usePermit2Allowance'
 import { buildAllTradeRouteInputs } from 'nft/utils/tokenRoutes'
 import { useEffect } from 'react'
 import { InterfaceTrade } from 'state/routing/types'
+import { isClassicTrade } from 'state/routing/utils'
 
 import { useTokenInput } from './useTokenInput'
 
 export default function usePayWithAnyTokenSwap(
-  trade?: InterfaceTrade<Currency, Currency, TradeType> | undefined,
+  trade?: InterfaceTrade | undefined,
   allowance?: Allowance,
   allowedSlippage?: Percent
 ) {
   const setTokenTradeInput = useTokenInput((state) => state.setTokenTradeInput)
-  const hasRoutes = !!trade && trade.routes
+  const hasRoutes = isClassicTrade(trade) && trade.routes
   const hasInputAmount = !!trade && !!trade.inputAmount && trade.inputAmount.currency.isToken
   const hasAllowance = !!allowedSlippage && !!allowance
 

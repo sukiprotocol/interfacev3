@@ -1,7 +1,7 @@
-import { TraceEvent } from '@uniswap/analytics'
 import { BrowserEvent, SharedEventName } from '@uniswap/analytics-events'
+import { TraceEvent } from 'analytics'
 import { Link } from 'react-router-dom'
-import styled, { DefaultTheme } from 'styled-components/macro'
+import styled, { DefaultTheme } from 'styled-components'
 import { BREAKPOINTS } from 'theme'
 import { useIsDarkMode } from 'theme/components/ThemeToggle'
 
@@ -10,14 +10,14 @@ export enum CardType {
   Secondary = 'Secondary',
 }
 
-const StyledCard = styled.div<{ isDarkMode: boolean; backgroundImgSrc?: string; type: CardType }>`
+const StyledCard = styled.div<{ $isDarkMode: boolean; $backgroundImgSrc?: string; $type: CardType }>`
   display: flex;
-  background: ${({ isDarkMode, backgroundImgSrc, type, theme }) =>
-    isDarkMode
-      ? `${type === CardType.Primary ? theme.backgroundModule : theme.backgroundSurface} ${
-          backgroundImgSrc ? ` url(${backgroundImgSrc})` : ''
+  background: ${({ $isDarkMode, $backgroundImgSrc, $type, theme }) =>
+    $isDarkMode
+      ? `${$type === CardType.Primary ? theme.backgroundModule : theme.backgroundSurface} ${
+          $backgroundImgSrc ? ` url(${$backgroundImgSrc})` : ''
         }`
-      : `${type === CardType.Primary ? 'white' : theme.backgroundModule} url(${backgroundImgSrc})`};
+      : `${$type === CardType.Primary ? 'white' : theme.backgroundModule} url(${$backgroundImgSrc})`};
   background-size: auto 100%;
   background-position: right;
   background-repeat: no-repeat;
@@ -35,10 +35,10 @@ const StyledCard = styled.div<{ isDarkMode: boolean; backgroundImgSrc?: string; 
   transition: ${({ theme }) => `${theme.transition.duration.medium} ${theme.transition.timing.ease} border`};
 
   &:hover {
-    border: 1px solid ${({ theme, isDarkMode }) => (isDarkMode ? theme.backgroundInteractive : theme.textTertiary)};
+    border: 1px solid ${({ theme, $isDarkMode }) => ($isDarkMode ? theme.backgroundInteractive : theme.textTertiary)};
   }
   @media screen and (min-width: ${BREAKPOINTS.sm}px) {
-    height: ${({ backgroundImgSrc }) => (backgroundImgSrc ? 360 : 260)}px;
+    height: ${({ $backgroundImgSrc }) => ($backgroundImgSrc ? 360 : 260)}px;
   }
   @media screen and (min-width: ${BREAKPOINTS.xl}px) {
     padding: 32px;
@@ -125,14 +125,14 @@ const Card = ({
   return (
     <TraceEvent events={[BrowserEvent.onClick]} name={SharedEventName.ELEMENT_CLICKED} element={elementName}>
       <StyledCard
-        type={type}
         as={external ? 'a' : Link}
         to={external ? undefined : to}
         href={external ? to : undefined}
         target={external ? '_blank' : undefined}
         rel={external ? 'noopenener noreferrer' : undefined}
-        isDarkMode={isDarkMode}
-        backgroundImgSrc={backgroundImgSrc}
+        $backgroundImgSrc={backgroundImgSrc}
+        $isDarkMode={isDarkMode}
+        $type={type}
       >
         <TitleRow>
           <CardTitle>{title}</CardTitle>

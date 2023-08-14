@@ -9,7 +9,7 @@ import { GenieAsset, isPooledMarket, Markets } from 'nft/types'
 import { calcPoolPrice, formatWeiToDecimal, isInSameSudoSwapPool } from 'nft/utils'
 import { default as Slider } from 'rc-slider'
 import { useEffect, useMemo, useReducer, useState } from 'react'
-import styled, { useTheme } from 'styled-components/macro'
+import styled, { useTheme } from 'styled-components'
 import { ThemedText } from 'theme'
 
 const SweepContainer = styled.div`
@@ -111,7 +111,7 @@ const NftDisplayContainer = styled.div`
   height: 34px;
 `
 
-const NftHolder = styled.div<{ index: number; src: string | undefined }>`
+const NftHolder = styled.div<{ index: number; src?: string }>`
   position: absolute;
   top: 50%;
   left: 50%;

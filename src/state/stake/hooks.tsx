@@ -1,9 +1,8 @@
 import { Interface } from '@ethersproject/abi'
-import { abi as STAKING_REWARDS_ABI } from '@uniswap/liquidity-staker/build/StakingRewards.json'
-import { CurrencyAmount, Token } from '@uniswap/sdk-core'
+import StakingRewardsJSON from '@uniswap/liquidity-staker/build/StakingRewards.json'
+import { ChainId, CurrencyAmount, Token } from '@uniswap/sdk-core'
 import { Pair } from '@uniswap/v2-sdk'
 import { useWeb3React } from '@web3-react/core'
-import { SupportedChainId } from 'constants/chains'
 import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp'
 import JSBI from 'jsbi'
 import { NEVER_RELOAD, useMultipleContractSingleData } from 'lib/hooks/multicall'
@@ -11,7 +10,7 @@ import { useMemo } from 'react'
 
 import { DAI, UNI, USDC_MAINNET, USDT, WBTC, WRAPPED_NATIVE_CURRENCY } from '../../constants/tokens'
 
-const STAKING_REWARDS_INTERFACE = new Interface(STAKING_REWARDS_ABI)
+const STAKING_REWARDS_INTERFACE = new Interface(StakingRewardsJSON.abi)
 
 export const STAKING_GENESIS = 1600387200
 
@@ -23,19 +22,19 @@ const STAKING_REWARDS_INFO: {
 } = {
   1: [
     {
-      tokens: [WRAPPED_NATIVE_CURRENCY[SupportedChainId.MAINNET] as Token, DAI],
+      tokens: [WRAPPED_NATIVE_CURRENCY[ChainId.MAINNET] as Token, DAI],
       stakingRewardAddress: '0xa1484C3aa22a66C62b77E0AE78E15258bd0cB711',
     },
     {
-      tokens: [WRAPPED_NATIVE_CURRENCY[SupportedChainId.MAINNET] as Token, USDC_MAINNET],
+      tokens: [WRAPPED_NATIVE_CURRENCY[ChainId.MAINNET] as Token, USDC_MAINNET],
       stakingRewardAddress: '0x7FBa4B8Dc5E7616e59622806932DBea72537A56b',
     },
     {
-      tokens: [WRAPPED_NATIVE_CURRENCY[SupportedChainId.MAINNET] as Token, USDT],
+      tokens: [WRAPPED_NATIVE_CURRENCY[ChainId.MAINNET] as Token, USDT],
       stakingRewardAddress: '0x6C3e4cb2E96B01F4b866965A91ed4437839A121a',
     },
     {
-      tokens: [WRAPPED_NATIVE_CURRENCY[SupportedChainId.MAINNET] as Token, WBTC],
+      tokens: [WRAPPED_NATIVE_CURRENCY[ChainId.MAINNET] as Token, WBTC],
       stakingRewardAddress: '0xCA35e32e7926b96A9988f61d510E038108d8068e',
     },
   ],
@@ -58,7 +57,7 @@ interface StakingInfo {
   // equivalent to percent of total supply * reward rate
   rewardRate: CurrencyAmount<Token>
   // when the period ends
-  periodFinish: Date | undefined
+  periodFinish?: Date
   // if pool is active
   active: boolean
   // calculates a hypothetical amount of token distributed to the active account per second.

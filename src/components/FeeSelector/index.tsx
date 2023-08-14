@@ -13,7 +13,7 @@ import usePrevious from 'hooks/usePrevious'
 import { DynamicSection } from 'pages/AddLiquidity/styled'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Box } from 'rebass'
-import styled, { keyframes } from 'styled-components/macro'
+import styled, { keyframes } from 'styled-components'
 import { ThemedText } from 'theme'
 
 import { FeeOption } from './FeeOption'
@@ -56,8 +56,8 @@ export default function FeeSelector({
   disabled?: boolean
   feeAmount?: FeeAmount
   handleFeePoolSelect: (feeAmount: FeeAmount) => void
-  currencyA?: Currency | undefined
-  currencyB?: Currency | undefined
+  currencyA?: Currency
+  currencyB?: Currency
 }) {
   const { chainId } = useWeb3React()
 

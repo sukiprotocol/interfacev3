@@ -1,7 +1,7 @@
 import Column, { AutoColumn } from 'components/Column'
 import Row from 'components/Row'
 import { LoadingBubble } from 'components/Tokens/loading'
-import styled, { css, keyframes } from 'styled-components/macro'
+import styled, { css, keyframes } from 'styled-components'
 
 export const PortfolioRowWrapper = styled(Row)<{ onClick?: any }>`
   gap: 12px;
@@ -22,12 +22,14 @@ const EndColumn = styled(Column)`
 `
 
 export default function PortfolioRow({
+  ['data-testid']: testId,
   left,
   title,
   descriptor,
   right,
   onClick,
 }: {
+  'data-testid'?: string
   left: React.ReactNode
   title: React.ReactNode
   descriptor?: React.ReactNode
@@ -36,7 +38,7 @@ export default function PortfolioRow({
   onClick?: () => void
 }) {
   return (
-    <PortfolioRowWrapper onClick={onClick}>
+    <PortfolioRowWrapper data-testid={testId} onClick={onClick}>
       {left}
       <AutoColumn grow>
         {title}

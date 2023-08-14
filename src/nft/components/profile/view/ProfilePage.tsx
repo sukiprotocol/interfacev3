@@ -23,7 +23,7 @@ import { Dispatch, SetStateAction, Suspense, useCallback, useEffect, useMemo, us
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useInfiniteQuery } from 'react-query'
 import { easings, useSpring } from 'react-spring'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { shallow } from 'zustand/shallow'
 
 import { EmptyWalletModule } from './EmptyWalletContent'
@@ -313,7 +313,7 @@ const CollectionFilterItem = ({
   collection,
   setCollectionFilters,
 }: {
-  collection: WalletCollection | undefined
+  collection?: WalletCollection
   setCollectionFilters: (address: string) => void
 }) => {
   if (!collection) return null

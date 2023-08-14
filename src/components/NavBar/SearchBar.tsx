@@ -1,23 +1,25 @@
 // eslint-disable-next-line no-restricted-imports
-import { t, Trans } from '@lingui/macro'
-import { sendAnalyticsEvent, Trace, TraceEvent, useTrace } from '@uniswap/analytics'
+import { t } from '@lingui/macro'
+import { useLingui } from '@lingui/react'
 import { BrowserEvent, InterfaceElementName, InterfaceEventName, InterfaceSectionName } from '@uniswap/analytics-events'
 import { useWeb3React } from '@web3-react/core'
+import { sendAnalyticsEvent, Trace, TraceEvent, useTrace } from 'analytics'
 import clsx from 'clsx'
 import { useCollectionSearch } from 'graphql/data/nft/CollectionSearch'
 import { useSearchTokens } from 'graphql/data/SearchTokens'
 import useDebounce from 'hooks/useDebounce'
+import { useDisableNFTRoutes } from 'hooks/useDisableNFTRoutes'
 import { useIsNftPage } from 'hooks/useIsNftPage'
 import { useOnClickOutside } from 'hooks/useOnClickOutside'
 import { organizeSearchResults } from 'lib/utils/searchBar'
 import { Box } from 'nft/components/Box'
-import { Row } from 'nft/components/Flex'
+import { Column, Row } from 'nft/components/Flex'
 import { magicalGradientOnHover } from 'nft/css/common.css'
 import { useIsMobile, useIsTablet } from 'nft/hooks'
 import { useIsNavSearchInputVisible } from 'nft/hooks/useIsNavSearchInputVisible'
-import { ChangeEvent, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 
 import { ChevronLeftIcon, MagnifyingGlassIcon, NavMagnifyingGlassIcon } from '../../nft/components/icons'
 import { NavIcon } from './NavIcon'
@@ -50,6 +52,7 @@ export const SearchBar = () => {
   const isMobile = useIsMobile()
   const isTablet = useIsTablet()
   const isNavSearchInputVisible = useIsNavSearchInputVisible()
+  const shouldDisableNFTRoutes = useDisableNFTRoutes()
 
   useOnClickOutside(searchRef, () => {
     isOpen && toggleOpen()
@@ -132,13 +135,19 @@ export const SearchBar = () => {
 
   return (
     <Trace section={InterfaceSectionName.NAVBAR_SEARCH}>
-      <Box
+      <Column
         data-cy="search-bar"
-        position={{ sm: 'fixed', md: 'absolute', xl: 'relative' }}
+        position={{ sm: 'fixed', md: 'absolute' }}
         width={{ sm: isOpen ? 'viewWidth' : 'auto', md: 'auto' }}
         ref={searchRef}
-        className={styles.searchBarContainerNft}
-        display={{ sm: isOpen ? 'inline-block' : 'none', xl: 'inline-block' }}
+        className={clsx(styles.searchBarContainerNft, {
+          searchBarContainerDisableBlur: isNavSearchInputVisible,
+        })}
+        display={{ sm: isOpen ? 'flex' : 'none', xl: 'flex' }}
+        {...(isNavSearchInputVisible && {
+          position: 'relative',
+          display: 'flex',
+        })}
       >
         <Row
           className={clsx(
@@ -168,31 +177,24 @@ export const SearchBar = () => {
             element={InterfaceElementName.NAVBAR_SEARCH_INPUT}
             properties={{ ...trace }}
           >
-            <Trans
-              id={placeholderText}
-              render={({ translation }) => (
-                <Box
-                  as="input"
-                  data-cy="search-bar-input"
-                  placeholder={translation as string}
-                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                    !isOpen && toggleOpen()
-                    setSearchValue(event.target.value)
-                  }}
-                  onBlur={() =>
-                    sendAnalyticsEvent(InterfaceEventName.NAVBAR_SEARCH_EXITED, navbarSearchEventProperties)
-                  }
-                  className={`${styles.searchBarInput} ${styles.searchContentLeftAlign}`}
-                  value={searchValue}
-                  ref={inputRef}
-                  width="full"
-                />
-              )}
+            <Box
+              as="input"
+              data-cy="search-bar-input"
+              placeholder={placeholderText}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                !isOpen && toggleOpen()
+                setSearchValue(event.target.value)
+              }}
+              onBlur={() => sendAnalyticsEvent(InterfaceEventName.NAVBAR_SEARCH_EXITED, navbarSearchEventProperties)}
+              className={`${styles.searchBarInput} ${styles.searchContentLeftAlign}`}
+              value={searchValue}
+              ref={inputRef}
+              width="full"
             />
           </TraceEvent>
           {!isOpen && <KeyShortCut>/</KeyShortCut>}
         </Row>
-        <Box className={clsx(isOpen ? styles.visible : styles.hidden)}>
+        <Column overflow="hidden" className={clsx(isOpen ? styles.visible : styles.hidden)}>
           {isOpen && (
             <SearchBarDropdown
               toggleOpen={toggleOpen}
@@ -203,8 +205,8 @@ export const SearchBar = () => {
               isLoading={tokensAreLoading || collectionsAreLoading}
             />
           )}
-        </Box>
-      </Box>
+        </Column>
+      </Column>
       {isMobileOrTablet && (
         <NavIcon onClick={toggleOpen} label={placeholderText}>
           <NavMagnifyingGlassIcon />
