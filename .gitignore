@@ -5,11 +5,12 @@
 /src/types/v3
 /src/abis/types
 /src/locales/**/*.js
-/src/locales/**/en-US.po
-/src/locales/**/pseudo.po
+/src/locales/**/*.po
 
-# generated graphql types
-/src/graphql/**/__generated__
+# generated files
+/src/**/__generated__
+
+# schema
 schema.graphql
 
 # dependencies
@@ -18,6 +19,8 @@ schema.graphql
 # testing
 /coverage
 /cache
+/functions/coverage
+/.swc
 
 # builds
 /build
@@ -45,7 +48,10 @@ notes.txt
 
 package-lock.json
 
+cypress/downloads
 cypress/videos
 cypress/screenshots
 
 .vercel
+
+.wrangler

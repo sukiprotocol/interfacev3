@@ -1,12 +1,11 @@
 import { Trans } from '@lingui/macro'
-import { formatNumber, NumberType } from '@uniswap/conedison/format'
 import { Currency, Price } from '@uniswap/sdk-core'
 import { useUSDPrice } from 'hooks/useUSDPrice'
 import tryParseCurrencyAmount from 'lib/utils/tryParseCurrencyAmount'
-import { useCallback, useState } from 'react'
-import styled from 'styled-components/macro'
+import { useCallback, useMemo, useState } from 'react'
+import styled from 'styled-components'
 import { ThemedText } from 'theme'
-import { formatTransactionAmount, priceToPreciseFloat } from 'utils/formatNumbers'
+import { formatNumber, formatPrice, NumberType } from 'utils/formatNumbers'
 
 interface TradePriceProps {
   price: Price<Currency, Currency>
@@ -25,7 +24,6 @@ const StyledPriceContainer = styled.button`
   flex-direction: row;
   text-align: left;
   flex-wrap: wrap;
-  padding: 8px 0;
   user-select: text;
 `
 
@@ -35,14 +33,13 @@ export default function TradePrice({ price }: TradePriceProps) {
   const { baseCurrency, quoteCurrency } = price
   const { data: usdPrice } = useUSDPrice(tryParseCurrencyAmount('1', showInverted ? baseCurrency : quoteCurrency))
 
-  let formattedPrice: string
-  try {
-    formattedPrice = showInverted
-      ? formatTransactionAmount(priceToPreciseFloat(price))
-      : formatTransactionAmount(priceToPreciseFloat(price.invert()))
-  } catch (error) {
-    formattedPrice = '0'
-  }
+  const formattedPrice = useMemo(() => {
+    try {
+      return formatPrice(showInverted ? price : price.invert(), NumberType.TokenTx)
+    } catch {
+      return '0'
+    }
+  }, [price, showInverted])
 
   const label = showInverted ? `${price.quoteCurrency?.symbol}` : `${price.baseCurrency?.symbol} `
   const labelInverted = showInverted ? `${price.baseCurrency?.symbol} ` : `${price.quoteCurrency?.symbol}`
@@ -60,9 +57,9 @@ export default function TradePrice({ price }: TradePriceProps) {
     >
       <ThemedText.BodySmall>{text}</ThemedText.BodySmall>{' '}
       {usdPrice && (
-        <ThemedText.DeprecatedDarkGray>
+        <ThemedText.BodySmall color="textSecondary">
           <Trans>({formatNumber(usdPrice, NumberType.FiatTokenPrice)})</Trans>
-        </ThemedText.DeprecatedDarkGray>
+        </ThemedText.BodySmall>
       )}
     </StyledPriceContainer>
   )

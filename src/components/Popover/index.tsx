@@ -3,7 +3,7 @@ import Portal from '@reach/portal'
 import useInterval from 'lib/hooks/useInterval'
 import React, { CSSProperties, useCallback, useMemo, useState } from 'react'
 import { usePopper } from 'react-popper'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { Z_INDEX } from 'theme/zIndex'
 
 const PopoverContainer = styled.div<{ show: boolean }>`
@@ -20,7 +20,7 @@ const ReferenceElement = styled.div`
   height: inherit;
 `
 
-const Arrow = styled.div`
+export const Arrow = styled.div`
   width: 8px;
   height: 8px;
   z-index: 9998;
@@ -99,8 +99,8 @@ export default function Popover({
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
   const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null)
 
-  const options = useMemo(
-    (): Options => ({
+  const options: Options = useMemo(
+    () => ({
       placement,
       strategy: 'fixed',
       modifiers: [
@@ -109,7 +109,7 @@ export default function Popover({
         { name: 'preventOverflow', options: { padding: 8 } },
       ],
     }),
-    [arrowElement, offsetX, offsetY, placement]
+    [placement, offsetX, offsetY, arrowElement]
   )
 
   const { styles, update, attributes } = usePopper(referenceElement, popperElement, options)

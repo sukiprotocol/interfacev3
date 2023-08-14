@@ -3,7 +3,7 @@
  */
 
 import { Text, TextProps as TextPropsOriginal } from 'rebass'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 
 const TextWrapper = styled(Text).withConfig({
   shouldForwardProp: (prop) => prop !== 'color',
@@ -46,11 +46,17 @@ export const ThemedText = {
   LabelSmall(props: TextProps) {
     return <TextWrapper fontWeight={600} fontSize={14} color="textSecondary" {...props} />
   },
+  LabelMicro(props: TextProps) {
+    return <TextWrapper fontWeight={600} fontSize={12} color="textSecondary" {...props} />
+  },
   Link(props: TextProps) {
     return <TextWrapper fontWeight={600} fontSize={14} color="accentAction" {...props} />
   },
   MediumHeader(props: TextProps) {
     return <TextWrapper fontWeight={400} fontSize={20} color="textPrimary" {...props} />
+  },
+  SubHeaderLarge(props: TextProps) {
+    return <TextWrapper fontWeight={500} fontSize={20} color="textPrimary" {...props} />
   },
   SubHeader(props: TextProps) {
     return <TextWrapper fontWeight={500} fontSize={16} color="textPrimary" lineHeight="24px" {...props} />

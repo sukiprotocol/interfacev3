@@ -1,23 +1,21 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import type { TransactionResponse } from '@ethersproject/providers'
 import { Trans } from '@lingui/macro'
-import { Trace } from '@uniswap/analytics'
 import { InterfacePageName } from '@uniswap/analytics-events'
-import { formatPrice, NumberType } from '@uniswap/conedison/format'
 import { Currency, CurrencyAmount, Fraction, Percent, Price, Token } from '@uniswap/sdk-core'
 import { NonfungiblePositionManager, Pool, Position } from '@uniswap/v3-sdk'
-import { SupportedChainId } from '@uniswap/widgets'
 import { useWeb3React } from '@web3-react/core'
+import { Trace } from 'analytics'
 import { sendEvent } from 'components/analytics'
 import Badge from 'components/Badge'
 import { ButtonConfirmed, ButtonGray, ButtonPrimary } from 'components/Button'
 import { DarkCard, LightCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import DoubleCurrencyLogo from 'components/DoubleLogo'
-import Loader from 'components/Icons/LoadingSpinner'
+import { LoadingFullscreen } from 'components/Loader/styled'
 import CurrencyLogo from 'components/Logo/CurrencyLogo'
 import { RowBetween, RowFixed } from 'components/Row'
-import { Dots } from 'components/swap/styleds'
+import { Dots } from 'components/swap/styled'
 import Toggle from 'components/Toggle'
 import TransactionConfirmationModal, { ConfirmationModalContent } from 'components/TransactionConfirmationModal'
 import { CHAIN_IDS_TO_NAMES, isSupportedChain } from 'constants/chains'
@@ -31,14 +29,15 @@ import { useV3PositionFees } from 'hooks/useV3PositionFees'
 import { useV3PositionFromTokenId } from 'hooks/useV3Positions'
 import { useSingleCallResult } from 'lib/hooks/multicall'
 import useNativeCurrency from 'lib/hooks/useNativeCurrency'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Bound } from 'state/mint/v3/actions'
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
-import styled, { useTheme } from 'styled-components/macro'
-import { ExternalLink, HideExtraSmall, HideSmall, ThemedText } from 'theme'
+import styled, { useTheme } from 'styled-components'
+import { ExternalLink, HideExtraSmall, HideSmall, StyledRouterLink, ThemedText } from 'theme'
 import { currencyId } from 'utils/currencyId'
 import { formatCurrencyAmount } from 'utils/formatCurrencyAmount'
+import { formatPrice, NumberType } from 'utils/formatNumbers'
 import { formatTickPrice } from 'utils/formatTickPrice'
 import { unwrappedToken } from 'utils/unwrappedToken'
 
@@ -51,16 +50,7 @@ import { usePositionTokenURI } from '../../hooks/usePositionTokenURI'
 import { TransactionType } from '../../state/transactions/types'
 import { calculateGasMargin } from '../../utils/calculateGasMargin'
 import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
-import { LoadingRows } from './styleds'
-
-const getTokenLink = (chainId: SupportedChainId, address: string) => {
-  if (isGqlSupportedChain(chainId)) {
-    const chainName = CHAIN_IDS_TO_NAMES[chainId]
-    return `${window.location.origin}/#/tokens/${chainName}/${address}`
-  } else {
-    return getExplorerLink(chainId, address, ExplorerDataType.TOKEN)
-  }
-}
+import { LoadingRows } from './styled'
 
 const PositionPageButtonPrimary = styled(ButtonPrimary)`
   width: 228px;
@@ -211,17 +201,31 @@ function CurrentPriceCard({
   )
 }
 
+const TokenLink = ({
+  children,
+  chainId,
+  address,
+}: PropsWithChildren<{ chainId: keyof typeof CHAIN_IDS_TO_NAMES; address: string }>) => {
+  const chainName = CHAIN_IDS_TO_NAMES[chainId]
+  return <StyledRouterLink to={`/tokens/${chainName}/${address}`}>{children}</StyledRouterLink>
+}
+
+const ExternalTokenLink = ({ children, chainId, address }: PropsWithChildren<{ chainId: number; address: string }>) => {
+  return <ExternalLink href={getExplorerLink(chainId, address, ExplorerDataType.TOKEN)}>{children}</ExternalLink>
+}
+
 function LinkedCurrency({ chainId, currency }: { chainId?: number; currency?: Currency }) {
   const address = (currency as Token)?.address
 
   if (typeof chainId === 'number' && address) {
+    const Link = isGqlSupportedChain(chainId) ? TokenLink : ExternalTokenLink
     return (
-      <ExternalLink href={getTokenLink(chainId, address)}>
+      <Link chainId={chainId} address={address}>
         <RowFixed>
           <CurrencyLogo currency={currency} size="20px" style={{ marginRight: '0.5rem' }} />
           <ThemedText.DeprecatedMain>{currency?.symbol} ↗</ThemedText.DeprecatedMain>
         </RowFixed>
-      </ExternalLink>
+      </Link>
     )
   }
 
@@ -403,7 +407,7 @@ function PositionPageContent() {
 
   // flag for receiving WETH
   const [receiveWETH, setReceiveWETH] = useState(false)
-  const nativeCurrency = useNativeCurrency()
+  const nativeCurrency = useNativeCurrency(chainId)
   const nativeWrappedSymbol = nativeCurrency.wrapped.symbol
 
   // construct Position from details returned
@@ -537,8 +541,12 @@ function PositionPageContent() {
               type: TransactionType.COLLECT_FEES,
               currencyId0: currencyId(currency0ForFeeCollectionPurposes),
               currencyId1: currencyId(currency1ForFeeCollectionPurposes),
-              expectedCurrencyOwed0: CurrencyAmount.fromRawAmount(currency0ForFeeCollectionPurposes, 0).toExact(),
-              expectedCurrencyOwed1: CurrencyAmount.fromRawAmount(currency1ForFeeCollectionPurposes, 0).toExact(),
+              expectedCurrencyOwed0:
+                feeValue0?.quotient.toString() ??
+                CurrencyAmount.fromRawAmount(currency0ForFeeCollectionPurposes, 0).toExact(),
+              expectedCurrencyOwed1:
+                feeValue1?.quotient.toString() ??
+                CurrencyAmount.fromRawAmount(currency1ForFeeCollectionPurposes, 0).toExact(),
             })
           })
       })
@@ -598,7 +606,7 @@ function PositionPageContent() {
         <ThemedText.DeprecatedItalic>
           <Trans>Collecting fees will withdraw currently available fees for you.</Trans>
         </ThemedText.DeprecatedItalic>
-        <ButtonPrimary onClick={collect}>
+        <ButtonPrimary data-testid="modal-collect-fees-button" onClick={collect}>
           <Trans>Collect</Trans>
         </ButtonPrimary>
       </AutoColumn>
@@ -642,7 +650,7 @@ function PositionPageContent() {
             onDismiss={() => setShowConfirm(false)}
             attemptingTxn={collecting}
             hash={collectMigrationHash ?? ''}
-            content={() => (
+            reviewContent={() => (
               <ConfirmationModalContent
                 title={<Trans>Claim fees</Trans>}
                 onDismiss={() => setShowConfirm(false)}
@@ -708,7 +716,8 @@ function PositionPageContent() {
             <ResponsiveRow align="flex-start">
               <HideSmall
                 style={{
-                  marginRight: '12px',
+                  height: '100%',
+                  marginRight: 12,
                 }}
               >
                 {'result' in metadata ? (
@@ -736,9 +745,11 @@ function PositionPageContent() {
                     height="100%"
                     style={{
                       minWidth: '340px',
+                      position: 'relative',
+                      overflow: 'hidden',
                     }}
                   >
-                    <Loader />
+                    <LoadingFullscreen />
                   </DarkCard>
                 )}
               </HideSmall>
@@ -824,6 +835,7 @@ function PositionPageContent() {
                         {ownsNFT &&
                         (feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0) || !!collectMigrationHash) ? (
                           <ResponsiveButtonConfirmed
+                            data-testid="collect-fees-button"
                             disabled={collecting || !!collectMigrationHash}
                             confirmed={!!collectMigrationHash && !isCollectPending}
                             width="fit-content"

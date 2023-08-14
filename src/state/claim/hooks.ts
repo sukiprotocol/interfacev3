@@ -1,8 +1,7 @@
 import type { TransactionResponse } from '@ethersproject/providers'
-import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
-import { CurrencyAmount, Token } from '@uniswap/sdk-core'
+import MerkleDistributorJSON from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
+import { CurrencyAmount, MERKLE_DISTRIBUTOR_ADDRESS, Token } from '@uniswap/sdk-core'
 import { useWeb3React } from '@web3-react/core'
-import { MERKLE_DISTRIBUTOR_ADDRESS } from 'constants/addresses'
 import JSBI from 'jsbi'
 import { useSingleCallResult } from 'lib/hooks/multicall'
 import { useEffect, useState } from 'react'
@@ -15,7 +14,7 @@ import { useTransactionAdder } from '../transactions/hooks'
 import { TransactionType } from '../transactions/types'
 
 function useMerkleDistributorContract() {
-  return useContract(MERKLE_DISTRIBUTOR_ADDRESS, MERKLE_DISTRIBUTOR_ABI, true)
+  return useContract(MERKLE_DISTRIBUTOR_ADDRESS, MerkleDistributorJSON.abi, true)
 }
 
 interface UserClaimData {

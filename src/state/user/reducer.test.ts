@@ -1,4 +1,5 @@
 import { createStore, Store } from 'redux'
+import { RouterPreference } from 'state/routing/types'
 
 import { DEFAULT_DEADLINE_FROM_NOW } from '../../constants/misc'
 import { updateVersion } from '../global/actions'
@@ -6,16 +7,16 @@ import reducer, {
   addSerializedPair,
   addSerializedToken,
   initialState,
+  updateHideBaseWalletBanner,
   updateHideClosedPositions,
-  updateHideUniswapWalletBanner,
   updateSelectedWallet,
-  updateUserClientSideRouter,
   updateUserDeadline,
-  updateUserExpertMode,
   updateUserLocale,
+  updateUserRouterPreference,
   updateUserSlippageTolerance,
   UserState,
 } from './reducer'
+import { SlippageTolerance } from './types'
 
 function buildSerializedPair(token0Address: string, token1Address: string, chainId: number) {
   return {
@@ -54,7 +55,7 @@ describe('swap reducer', () => {
       } as any)
       store.dispatch(updateVersion())
       expect(store.getState().userDeadline).toEqual(DEFAULT_DEADLINE_FROM_NOW)
-      expect(store.getState().userSlippageTolerance).toEqual('auto')
+      expect(store.getState().userSlippageTolerance).toEqual(SlippageTolerance.Auto)
     })
     it('sets allowed slippage and deadline to auto', () => {
       store = createStore(reducer, {
@@ -71,13 +72,6 @@ describe('swap reducer', () => {
     it('updates the selected wallet', () => {
       store.dispatch(updateSelectedWallet({ wallet: 'metamask' }))
       expect(store.getState().selectedWallet).toEqual('metamask')
-    })
-  })
-
-  describe('updateUserExpertMode', () => {
-    it('updates the userExpertMode', () => {
-      store.dispatch(updateUserExpertMode({ userExpertMode: true }))
-      expect(store.getState().userExpertMode).toEqual(true)
     })
   })
 
@@ -102,10 +96,10 @@ describe('swap reducer', () => {
     })
   })
 
-  describe('updateUserClientSideRouter', () => {
-    it('updates the userClientSideRouter', () => {
-      store.dispatch(updateUserClientSideRouter({ userClientSideRouter: true }))
-      expect(store.getState().userClientSideRouter).toEqual(true)
+  describe('updateRouterPreference', () => {
+    it('updates the routerPreference', () => {
+      store.dispatch(updateUserRouterPreference({ userRouterPreference: RouterPreference.API }))
+      expect(store.getState().userRouterPreference).toEqual(RouterPreference.API)
     })
   })
 
@@ -116,10 +110,10 @@ describe('swap reducer', () => {
     })
   })
 
-  describe('updateHideUniswapWalletBanner', () => {
-    it('updates the hideUniswapWalletBanner', () => {
-      store.dispatch(updateHideUniswapWalletBanner({ hideUniswapWalletBanner: true }))
-      expect(store.getState().hideUniswapWalletBanner).toEqual(true)
+  describe('updateHideBaseWalletBanner', () => {
+    it('updates the updateHideBaseWalletBanner', () => {
+      store.dispatch(updateHideBaseWalletBanner({ hideBaseWalletBanner: true }))
+      expect(store.getState().hideBaseWalletBanner).toEqual(true)
     })
   })
 

@@ -1,8 +1,9 @@
 import { rootCssString } from 'nft/css/cssStringFromTheme'
 import React, { useMemo } from 'react'
-import { createGlobalStyle, css, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components/macro'
+import { createGlobalStyle, css, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components'
 import { useIsDarkMode } from 'theme/components/ThemeToggle'
 
+import { navDimensions } from '../nft/css/sprinkles.css'
 import { darkTheme, lightTheme } from './colors'
 import { darkDeprecatedTheme, lightDeprecatedTheme } from './deprecatedColors'
 
@@ -35,7 +36,6 @@ export const BREAKPOINTS = {
   sm: 640,
   md: 768,
   lg: 1024,
-  navSearchInputVisible: 1100,
   xl: 1280,
   xxl: 1536,
   xxxl: 1920,
@@ -67,15 +67,18 @@ const fonts = {
   code: 'courier, courier new, serif',
 }
 
+const gapValues = {
+  xs: '4px',
+  sm: '8px',
+  md: '12px',
+  lg: '24px',
+  xl: '32px',
+}
+export type Gap = keyof typeof gapValues
+
 function getSettings(darkMode: boolean) {
   return {
-    grids: {
-      xs: '4px',
-      sm: '8px',
-      md: '12px',
-      lg: '24px',
-      xl: '32px',
-    },
+    grids: gapValues,
     fonts,
 
     // shadows
@@ -84,7 +87,8 @@ function getSettings(darkMode: boolean) {
     // media queries
     deprecated_mediaWidth: deprecated_mediaWidthTemplates,
 
-    navHeight: 72,
+    navHeight: navDimensions.height,
+    navVerticalPad: navDimensions.verticalPad,
     mobileBottomBarHeight: 52,
     maxWidth: MAX_CONTENT_WIDTH,
 
@@ -118,7 +122,7 @@ export const ThemedGlobalStyle = createGlobalStyle`
     background-color: ${({ theme }) => theme.background} !important;
   }
 
-  summary::-webkit-details-marker {
+ summary::-webkit-details-marker {
     display:none;
   }
 

@@ -1,4 +1,4 @@
-import { NftActivityType, NftStandard, OrderStatus } from 'graphql/data/__generated__/types-and-hooks'
+import { MediaType, NftActivityType, NftStandard, OrderStatus } from 'graphql/data/__generated__/types-and-hooks'
 import { ActivityEvent, GenieAsset, Markets, WalletAsset } from 'nft/types'
 
 export const TEST_NFT_ASSET: GenieAsset = {
@@ -8,6 +8,7 @@ export const TEST_NFT_ASSET: GenieAsset = {
   collectionName: 'Azuki',
   imageUrl:
     'https://cdn.center.app/1/0xED5AF388653567Af2F388E6224dC7C4b3241C544/3318/50ed67ad647d0aa0cad0b830d136a677efc2fb72a44587bc35f2a5fb334a7fdf.png',
+  mediaType: MediaType.Image,
   marketplace: Markets.Opensea,
   name: 'Azuki #3318',
   priceInfo: {

@@ -3,19 +3,18 @@ import { useAccountDrawer } from 'components/AccountDrawer'
 import Column from 'components/Column'
 import { LoadingBubble } from 'components/Tokens/loading'
 import { getYear, isSameDay, isSameMonth, isSameWeek, isSameYear } from 'date-fns'
-import { TransactionStatus, useTransactionListQuery } from 'graphql/data/__generated__/types-and-hooks'
+import { TransactionStatus } from 'graphql/data/__generated__/types-and-hooks'
 import { PollingInterval } from 'graphql/data/util'
 import { atom, useAtom } from 'jotai'
 import { EmptyWalletModule } from 'nft/components/profile/view/EmptyWalletContent'
 import { useEffect, useMemo } from 'react'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { ThemedText } from 'theme'
 
 import { PortfolioSkeleton, PortfolioTabWrapper } from '../PortfolioRow'
 import { ActivityRow } from './ActivityRow'
-import { useLocalActivities } from './parseLocal'
-import { parseRemoteActivities } from './parseRemote'
-import { Activity, ActivityMap } from './types'
+import { useAllActivities } from './hooks'
+import { Activity } from './types'
 
 interface ActivityGroup {
   title: string
@@ -25,7 +24,7 @@ interface ActivityGroup {
 const sortActivities = (a: Activity, b: Activity) => b.timestamp - a.timestamp
 
 const createGroups = (activities?: Array<Activity>) => {
-  if (!activities || !activities.length) return []
+  if (!activities) return undefined
   const now = Date.now()
 
   const pending: Array<Activity> = []
@@ -82,32 +81,13 @@ const ActivityGroupWrapper = styled(Column)`
   gap: 8px;
 `
 
-function combineActivities(localMap: ActivityMap = {}, remoteMap: ActivityMap = {}): Array<Activity> {
-  const txHashes = [...new Set([...Object.keys(localMap), ...Object.keys(remoteMap)])]
-
-  // Merges local and remote activities w/ same hash, preferring remote data
-  return txHashes.reduce((acc: Array<Activity>, hash) => {
-    const localActivity = localMap?.[hash] ?? {}
-    const remoteActivity = remoteMap?.[hash] ?? {}
-    // TODO(cartcrom): determine best logic for which fields to prefer from which sources, i.e. prefer remote exact swap output instead of local estimated output
-    acc.push({ ...remoteActivity, ...localActivity } as Activity)
-    return acc
-  }, [])
-}
-
 const lastFetchedAtom = atom<number | undefined>(0)
 
 export function ActivityTab({ account }: { account: string }) {
   const [drawerOpen, toggleWalletDrawer] = useAccountDrawer()
   const [lastFetched, setLastFetched] = useAtom(lastFetchedAtom)
 
-  const localMap = useLocalActivities(account)
-
-  const { data, loading, refetch } = useTransactionListQuery({
-    variables: { account },
-    errorPolicy: 'all',
-    fetchPolicy: 'cache-first',
-  })
+  const { activities, loading, refetch } = useAllActivities(account)
 
   // We only refetch remote activity if the user renavigates to the activity tab by changing tabs or opening the drawer
   useEffect(() => {
@@ -120,20 +100,16 @@ export function ActivityTab({ account }: { account: string }) {
     }
   }, [drawerOpen, lastFetched, refetch, setLastFetched])
 
-  const activityGroups = useMemo(() => {
-    const remoteMap = parseRemoteActivities(data?.portfolios?.[0].assetActivities)
-    const allActivities = combineActivities(localMap, remoteMap)
-    return createGroups(allActivities)
-  }, [data?.portfolios, localMap])
+  const activityGroups = useMemo(() => createGroups(activities), [activities])
 
-  if (!data && loading)
+  if (!activityGroups && loading) {
     return (
       <>
         <LoadingBubble height="16px" width="80px" margin="16px 16px 8px" />
         <PortfolioSkeleton shrinkRight />
       </>
     )
-  else if (activityGroups.length === 0) {
+  } else if (!activityGroups || activityGroups?.length === 0) {
     return <EmptyWalletModule type="activity" onNavigateClick={toggleWalletDrawer} />
   } else {
     return (

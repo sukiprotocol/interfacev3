@@ -12,7 +12,7 @@ import { TimePeriod } from 'graphql/data/util'
 import { useActiveLocale } from 'hooks/useActiveLocale'
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowDownRight, ArrowUpRight, TrendingUp } from 'react-feather'
-import styled, { useTheme } from 'styled-components/macro'
+import styled, { useTheme } from 'styled-components'
 import { ThemedText } from 'theme'
 import { textFadeIn } from 'theme/styles'
 import {
@@ -23,7 +23,7 @@ import {
   monthYearDayFormatter,
   weekFormatter,
 } from 'utils/formatChartTimes'
-import { formatDollar } from 'utils/formatNumbers'
+import { formatUSDPrice } from 'utils/formatNumbers'
 
 const DATA_EMPTY = { value: 0, timestamp: 0 }
 
@@ -64,7 +64,7 @@ export function formatDelta(delta: number | null | undefined) {
   return formattedDelta
 }
 
-export const DeltaText = styled.span<{ delta: number | undefined }>`
+export const DeltaText = styled.span<{ delta?: number }>`
   color: ${({ theme, delta }) =>
     delta !== undefined ? (Math.sign(delta) < 0 ? theme.accentFailure : theme.accentSuccess) : theme.textPrimary};
 `
@@ -124,7 +124,7 @@ const timeOptionsHeight = 44
 interface PriceChartProps {
   width: number
   height: number
-  prices: PricePoint[] | undefined | null
+  prices?: PricePoint[] | null
   timePeriod: TimePeriod
 }
 
@@ -186,14 +186,17 @@ export function PriceChart({ width, height, prices: originalPrices, timePeriod }
     const startDateWithOffset = new Date((startingPrice.timestamp.valueOf() + offsetTime) * 1000)
     const endDateWithOffset = new Date((endingPrice.timestamp.valueOf() - offsetTime) * 1000)
     switch (timePeriod) {
-      case TimePeriod.HOUR:
+      case TimePeriod.HOUR: {
+        const interval = timeMinute.every(5)
+
         return [
           hourFormatter(locale),
           dayHourFormatter(locale),
-          (timeMinute.every(5) ?? timeMinute)
-            .range(startDateWithOffset, endDateWithOffset, 2)
+          (interval ?? timeMinute)
+            .range(startDateWithOffset, endDateWithOffset, interval ? 2 : 10)
             .map((x) => x.valueOf() / 1000),
         ]
+      }
       case TimePeriod.DAY:
         return [
           hourFormatter(locale),
@@ -255,18 +258,33 @@ export function PriceChart({ width, height, prices: originalPrices, timePeriod }
     setDisplayPrice(endingPrice)
   }, [setCrosshair, setDisplayPrice, endingPrice])
 
+  // Resets the crosshair when the time period is changed, to avoid stale UI
+  useEffect(() => {
+    setCrosshair(null)
+  }, [timePeriod])
+
   const [tickFormatter, crosshairDateFormatter, ticks] = tickFormat(timePeriod, locale)
+  //max ticks based on screen size
+  const maxTicks = Math.floor(width / 100)
+  function calculateTicks(ticks: NumberValue[]) {
+    const newTicks = []
+    const tickSpacing = Math.floor(ticks.length / maxTicks)
+    for (let i = 1; i < ticks.length; i += tickSpacing) {
+      newTicks.push(ticks[i])
+    }
+    return newTicks
+  }
+
+  const updatedTicks = maxTicks > 0 ? (ticks.length > maxTicks ? calculateTicks(ticks) : ticks) : []
   const delta = calculateDelta(startingPrice.value, displayPrice.value)
   const formattedDelta = formatDelta(delta)
   const arrow = getDeltaArrow(delta)
   const crosshairEdgeMax = width * 0.85
   const crosshairAtEdge = !!crosshair && crosshair > crosshairEdgeMax
 
-  /*
-   * Default curve doesn't look good for the HOUR chart.
-   * Higher values make the curve more rigid, lower values smooth the curve but make it less "sticky" to real data points,
-   * making it unacceptable for shorter durations / smaller variances.
-   */
+  // Default curve doesn't look good for the HOUR chart.
+  // Higher values make the curve more rigid, lower values smooth the curve but make it less "sticky" to real data points,
+  // making it unacceptable for shorter durations / smaller variances.
   const curveTension = timePeriod === TimePeriod.HOUR ? 1 : 0.9
 
   const getX = useMemo(() => (p: PricePoint) => timeScale(p.timestamp), [timeScale])
@@ -278,7 +296,7 @@ export function PriceChart({ width, height, prices: originalPrices, timePeriod }
       <ChartHeader data-cy="chart-header">
         {displayPrice.value ? (
           <>
-            <TokenPrice>{formatDollar({ num: displayPrice.value, isPrice: true })}</TokenPrice>
+            <TokenPrice>{formatUSDPrice(displayPrice.value)}</TokenPrice>
             <DeltaContainer>
               {formattedDelta}
               <ArrowCell>{arrow}</ArrowCell>
@@ -326,7 +344,7 @@ export function PriceChart({ width, height, prices: originalPrices, timePeriod }
                 tickLength={4}
                 hideTicks={true}
                 tickTransform="translate(0 -5)"
-                tickValues={ticks}
+                tickValues={updatedTicks}
                 top={graphHeight - 1}
                 tickLabelProps={() => ({
                   fill: theme.textSecondary,

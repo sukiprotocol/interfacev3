@@ -1,23 +1,24 @@
-import { getDeviceId, sendAnalyticsEvent, Trace, user } from '@uniswap/analytics'
-import { CustomUserProperties, getBrowser, InterfacePageName, SharedEventName } from '@uniswap/analytics-events'
+import { CustomUserProperties, getBrowser, SharedEventName } from '@uniswap/analytics-events'
 import { useWeb3React } from '@web3-react/core'
+import { getDeviceId, sendAnalyticsEvent, Trace, user } from 'analytics'
 import Loader from 'components/Icons/LoadingSpinner'
 import TopLevelModals from 'components/TopLevelModals'
 import { useFeatureFlagsIsLoaded } from 'featureFlags'
-import ApeModeQueryParamReader from 'hooks/useApeModeQueryParamReader'
 import { useAtom } from 'jotai'
 import { useBag } from 'nft/hooks/useBag'
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { Navigate, Route, Routes, useLocation, useSearchParams } from 'react-router-dom'
 import { shouldDisableNFTRoutesAtom } from 'state/application/atoms'
+import { useRouterPreference } from 'state/user/hooks'
 import { StatsigProvider, StatsigUser } from 'statsig-react'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { SpinnerSVG } from 'theme/components'
 import { useIsDarkMode } from 'theme/components/ThemeToggle'
 import { flexRowNoWrap } from 'theme/styles'
 import { Z_INDEX } from 'theme/zIndex'
 import { STATSIG_DUMMY_KEY } from 'tracing'
 import { getEnvName } from 'utils/env'
+import { getCurrentPageFromLocation } from 'utils/urlRoutes'
 import { getCLS, getFCP, getFID, getLCP, Metric } from 'web-vitals'
 
 import { useAnalyticsReporter } from '../components/analytics'
@@ -26,7 +27,6 @@ import { PageTabs } from '../components/NavBar'
 import NavBar from '../components/NavBar'
 import Polling from '../components/Polling'
 import Popups from '../components/Popups'
-import { useIsExpertMode } from '../state/user/hooks'
 import DarkModeQueryParamReader from '../theme/components/DarkModeQueryParamReader'
 import AddLiquidity from './AddLiquidity'
 import { RedirectDuplicateTokenIds } from './AddLiquidity/redirects'
@@ -92,30 +92,6 @@ const HeaderWrapper = styled.div<{ transparent?: boolean }>`
   z-index: ${Z_INDEX.dropdown};
 `
 
-function getCurrentPageFromLocation(locationPathname: string): InterfacePageName | undefined {
-  switch (true) {
-    case locationPathname.startsWith('/swap'):
-      return InterfacePageName.SWAP_PAGE
-    case locationPathname.startsWith('/vote'):
-      return InterfacePageName.VOTE_PAGE
-    case locationPathname.startsWith('/pools'):
-    case locationPathname.startsWith('/pool'):
-      return InterfacePageName.POOL_PAGE
-    case locationPathname.startsWith('/tokens'):
-      return InterfacePageName.TOKENS_PAGE
-    case locationPathname.startsWith('/nfts/profile'):
-      return InterfacePageName.NFT_PROFILE_PAGE
-    case locationPathname.startsWith('/nfts/asset'):
-      return InterfacePageName.NFT_DETAILS_PAGE
-    case locationPathname.startsWith('/nfts/collection'):
-      return InterfacePageName.NFT_COLLECTION_PAGE
-    case locationPathname.startsWith('/nfts'):
-      return InterfacePageName.NFT_EXPLORE_PAGE
-    default:
-      return undefined
-  }
-}
-
 // this is the same svg defined in assets/images/blue-loader.svg
 // it is defined here because the remote asset may not have had time to load when this file is executing
 const LazyLoadSpinner = () => (
@@ -130,6 +106,14 @@ const LazyLoadSpinner = () => (
   </SpinnerSVG>
 )
 
+const RedirectHashToPath = ({ children }: { children: JSX.Element }) => {
+  const { hash } = useLocation()
+  if (hash) {
+    return <Navigate to={hash.replace('#', '')} replace />
+  }
+  return children
+}
+
 export default function App() {
   const isLoaded = useFeatureFlagsIsLoaded()
   const [shouldDisableNFTRoutes, setShouldDisableNFTRoutes] = useAtom(shouldDisableNFTRoutesAtom)
@@ -137,7 +121,7 @@ export default function App() {
   const { pathname } = useLocation()
   const currentPage = getCurrentPageFromLocation(pathname)
   const isDarkMode = useIsDarkMode()
-  const isExpertMode = useIsExpertMode()
+  const [routerPreference] = useRouterPreference()
   const [scrolledState, setScrolledState] = useState(false)
 
   useAnalyticsReporter()
@@ -164,13 +148,21 @@ export default function App() {
     user.set(CustomUserProperties.SCREEN_RESOLUTION_HEIGHT, window.screen.height)
     user.set(CustomUserProperties.SCREEN_RESOLUTION_WIDTH, window.screen.width)
 
-    sendAnalyticsEvent(SharedEventName.APP_LOADED)
-    getCLS(({ delta }: Metric) => sendAnalyticsEvent(SharedEventName.WEB_VITALS, { cumulative_layout_shift: delta }))
-    getFCP(({ delta }: Metric) => sendAnalyticsEvent(SharedEventName.WEB_VITALS, { first_contentful_paint_ms: delta }))
-    getFID(({ delta }: Metric) => sendAnalyticsEvent(SharedEventName.WEB_VITALS, { first_input_delay_ms: delta }))
-    getLCP(({ delta }: Metric) =>
-      sendAnalyticsEvent(SharedEventName.WEB_VITALS, { largest_contentful_paint_ms: delta })
-    )
+    // Service Worker analytics
+    const isServiceWorkerInstalled = Boolean(window.navigator.serviceWorker?.controller)
+    const isServiceWorkerHit = Boolean((window as any).__isDocumentCached)
+    const serviceWorkerProperty = isServiceWorkerInstalled ? (isServiceWorkerHit ? 'hit' : 'miss') : 'uninstalled'
+
+    const pageLoadProperties = { service_worker: serviceWorkerProperty }
+    sendAnalyticsEvent(SharedEventName.APP_LOADED, pageLoadProperties)
+    const sendWebVital =
+      (metric: string) =>
+      ({ delta }: Metric) =>
+        sendAnalyticsEvent(SharedEventName.WEB_VITALS, { ...pageLoadProperties, [metric]: delta })
+    getCLS(sendWebVital('cumulative_layout_shift'))
+    getFCP(sendWebVital('first_contentful_paint_ms'))
+    getFID(sendWebVital('first_input_delay_ms'))
+    getLCP(sendWebVital('largest_contentful_paint_ms'))
   }, [])
 
   useEffect(() => {
@@ -178,8 +170,8 @@ export default function App() {
   }, [isDarkMode])
 
   useEffect(() => {
-    user.set(CustomUserProperties.EXPERT_MODE, isExpertMode)
-  }, [isExpertMode])
+    user.set(CustomUserProperties.ROUTER_PREFERENCE, routerPreference)
+  }, [routerPreference])
 
   useEffect(() => {
     const scrollListener = () => {
@@ -204,7 +196,6 @@ export default function App() {
   return (
     <ErrorBoundary>
       <DarkModeQueryParamReader />
-      <ApeModeQueryParamReader />
       <Trace page={currentPage}>
         <StatsigProvider
           user={statsigUser}
@@ -226,7 +217,16 @@ export default function App() {
             <Suspense fallback={<Loader />}>
               {isLoaded ? (
                 <Routes>
-                  <Route path="/" element={<Landing />} />
+                  <Route
+                    path="/"
+                    element={
+                      // if react-router-dom matches "/" with window.location.hash defined, it means that we're
+                      // using BrowserRouter and can safely redirect to a path route
+                      <RedirectHashToPath>
+                        <Landing />
+                      </RedirectHashToPath>
+                    }
+                  />
 
                   <Route path="tokens" element={<Tokens />}>
                     <Route path=":chainName" />

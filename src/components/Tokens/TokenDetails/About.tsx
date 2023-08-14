@@ -1,9 +1,9 @@
 import { Trans } from '@lingui/macro'
+import { ChainId } from '@uniswap/sdk-core'
 import { getChainInfo } from 'constants/chainInfo'
-import { SupportedChainId } from 'constants/chains'
 import { darken } from 'polished'
 import { useState } from 'react'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { ThemedText } from 'theme'
 import { textFadeIn } from 'theme/styles'
 
@@ -67,10 +67,10 @@ const ResourcesContainer = styled.div`
 
 type AboutSectionProps = {
   address: string
-  chainId: SupportedChainId
-  description?: string | null | undefined
-  homepageUrl?: string | null | undefined
-  twitterName?: string | null | undefined
+  chainId: ChainId
+  description?: string | null
+  homepageUrl?: string | null
+  twitterName?: string | null
 }
 
 export function AboutSection({ address, chainId, description, homepageUrl, twitterName }: AboutSectionProps) {
@@ -105,7 +105,7 @@ export function AboutSection({ address, chainId, description, homepageUrl, twitt
       </ThemedText.SubHeaderSmall>
       <ResourcesContainer data-cy="resources-container">
         <Resource
-          name={chainId === SupportedChainId.MAINNET ? 'Etherscan' : 'Block Explorer'}
+          name={chainId === ChainId.MAINNET ? 'Etherscan' : 'Block Explorer'}
           link={`${explorer}${address === 'NATIVE' ? '' : 'address/' + address}`}
         />
         <Resource name="More analytics" link={`${infoLink}tokens/${address}`} />

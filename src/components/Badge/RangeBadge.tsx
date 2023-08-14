@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/macro'
 import { AlertTriangle, Slash } from 'react-feather'
-import styled, { useTheme } from 'styled-components/macro'
+import styled, { useTheme } from 'styled-components'
 
 import { MouseoverTooltip } from '../../components/Tooltip'
 
@@ -32,13 +32,7 @@ const LabelText = styled.div<{ color: string }>`
   justify-content: flex-end;
 `
 
-export default function RangeBadge({
-  removed,
-  inRange,
-}: {
-  removed: boolean | undefined
-  inRange: boolean | undefined
-}) {
+export default function RangeBadge({ removed, inRange }: { removed?: boolean; inRange?: boolean }) {
   const theme = useTheme()
   return (
     <BadgeWrapper>

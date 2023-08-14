@@ -1,6 +1,7 @@
 import { Connector } from '@web3-react/types'
-import { Connection, gnosisSafeConnection, networkConnection } from 'connection'
-import { useGetConnection } from 'connection'
+import { gnosisSafeConnection, networkConnection } from 'connection'
+import { getConnection } from 'connection'
+import { Connection } from 'connection/types'
 import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from 'state/hooks'
 import { updateSelectedWallet } from 'state/user/reducer'
@@ -21,7 +22,6 @@ export default function useEagerlyConnect() {
   const dispatch = useAppDispatch()
 
   const selectedWallet = useAppSelector((state) => state.user.selectedWallet)
-  const getConnection = useGetConnection()
 
   let selectedConnection: Connection | undefined
   if (selectedWallet) {

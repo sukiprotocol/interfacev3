@@ -2,14 +2,15 @@ import { Trans } from '@lingui/macro'
 import Row from 'components/Row'
 import { atom, useAtom } from 'jotai'
 import { atomWithStorage, useAtomValue, useUpdateAtom } from 'jotai/utils'
-import ms from 'ms.macro'
+import ms from 'ms'
 import { useCallback, useEffect, useMemo } from 'react'
 import { Moon, Sun } from 'react-feather'
+import { addMediaQueryListener, removeMediaQueryListener } from 'utils/matchMedia'
 
 import { Segment, SegmentedControl } from './SegmentedControl'
 import { ThemedText } from './text'
 
-const THEME_UPDATE_DELAY = ms`0.1s`
+const THEME_UPDATE_DELAY = ms(`0.1s`)
 const DARKMODE_MEDIA_QUERY = window.matchMedia('(prefers-color-scheme: dark)')
 
 export enum ThemeMode {
@@ -29,11 +30,17 @@ const themeModeAtom = atomWithStorage<ThemeMode>('interface_color_theme', ThemeM
 export function SystemThemeUpdater() {
   const setSystemTheme = useUpdateAtom(systemThemeAtom)
 
-  useEffect(() => {
-    DARKMODE_MEDIA_QUERY.addEventListener('change', (event) => {
+  const listener = useCallback(
+    (event: MediaQueryListEvent) => {
       setSystemTheme(event.matches ? ThemeMode.DARK : ThemeMode.LIGHT)
-    })
-  }, [setSystemTheme])
+    },
+    [setSystemTheme]
+  )
+
+  useEffect(() => {
+    addMediaQueryListener(DARKMODE_MEDIA_QUERY, listener)
+    return () => removeMediaQueryListener(DARKMODE_MEDIA_QUERY, listener)
+  }, [setSystemTheme, listener])
 
   return null
 }
