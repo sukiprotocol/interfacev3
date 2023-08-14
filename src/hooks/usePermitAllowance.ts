@@ -6,11 +6,13 @@ import PERMIT2_ABI from 'abis/permit2.json'
 import { Permit2 } from 'abis/types'
 import { useContract } from 'hooks/useContract'
 import { useSingleCallResult } from 'lib/hooks/multicall'
-import ms from 'ms.macro'
+import ms from 'ms'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { toReadableError, UserRejectedRequestError } from 'utils/errors'
+import { didUserReject } from 'utils/swapErrorToUserReadableMessage'
 
-const PERMIT_EXPIRATION = ms`30d`
-const PERMIT_SIG_EXPIRATION = ms`30m`
+const PERMIT_EXPIRATION = ms(`30d`)
+const PERMIT_SIG_EXPIRATION = ms(`30m`)
 
 function toDeadline(expiration: number): number {
   return Math.floor((Date.now() + expiration) / 1000)
@@ -55,7 +57,6 @@ export function useUpdatePermitAllowance(
   onPermitSignature: (signature: PermitSignature) => void
 ) {
   const { account, chainId, provider } = useWeb3React()
-
   return useCallback(async () => {
     try {
       if (!chainId) throw new Error('missing chainId')
@@ -82,7 +83,10 @@ export function useUpdatePermitAllowance(
       return
     } catch (e: unknown) {
       const symbol = token?.symbol ?? 'Token'
-      throw new Error(`${symbol} permit allowance failed: ${e instanceof Error ? e.message : e}`)
+      if (didUserReject(e)) {
+        throw new UserRejectedRequestError(`${symbol} permit allowance failed: User rejected signature`)
+      }
+      throw toReadableError(`${symbol} permit allowance failed:`, e)
     }
   }, [account, chainId, nonce, onPermitSignature, provider, spender, token])
 }

@@ -1,9 +1,9 @@
 import { getTestSelector } from '../utils'
-import { CONNECTED_WALLET_USER_STATE } from '../utils/user-state'
+import { CONNECTED_WALLET_USER_STATE, DISCONNECTED_WALLET_USER_STATE } from '../utils/user-state'
 
 describe('Landing Page', () => {
   it('shows landing page when no user state exists', () => {
-    cy.visit('/', { userState: {} })
+    cy.visit('/', { userState: DISCONNECTED_WALLET_USER_STATE })
     cy.get(getTestSelector('landing-page'))
     cy.screenshot()
   })
@@ -21,6 +21,7 @@ describe('Landing Page', () => {
   })
 
   it('shows landing page when the unicorn icon in nav is selected', () => {
+    cy.visit('/swap')
     cy.get(getTestSelector('uniswap-logo')).click()
     cy.get(getTestSelector('landing-page'))
   })

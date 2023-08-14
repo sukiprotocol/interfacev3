@@ -1,8 +1,7 @@
 import { Trans } from '@lingui/macro'
-import { Trace } from '@uniswap/analytics'
 import { InterfacePageName } from '@uniswap/analytics-events'
-import { Currency, Field } from '@uniswap/widgets'
 import { useWeb3React } from '@web3-react/core'
+import { Trace } from 'analytics'
 import CurrencyLogo from 'components/Logo/CurrencyLogo'
 import { AboutSection } from 'components/Tokens/TokenDetails/About'
 import AddressSection from 'components/Tokens/TokenDetails/AddressSection'
@@ -22,23 +21,23 @@ import TokenDetailsSkeleton, {
 import StatsSection from 'components/Tokens/TokenDetails/StatsSection'
 import TokenSafetyMessage from 'components/TokenSafety/TokenSafetyMessage'
 import TokenSafetyModal from 'components/TokenSafety/TokenSafetyModal'
-import Widget from 'components/Widget'
-import { SwapTokens } from 'components/Widget/inputs'
 import { NATIVE_CHAIN_ID, nativeOnChain } from 'constants/tokens'
 import { checkWarning } from 'constants/tokenSafety'
 import { TokenPriceQuery } from 'graphql/data/__generated__/types-and-hooks'
 import { Chain, TokenQuery, TokenQueryData } from 'graphql/data/Token'
 import { QueryToken } from 'graphql/data/Token'
-import { CHAIN_NAME_TO_CHAIN_ID, getTokenDetailsURL } from 'graphql/data/util'
-import { useIsUserAddedTokenOnChain } from 'hooks/Tokens'
+import { getTokenDetailsURL, InterfaceGqlChain, supportedChainIdFromGQLChain } from 'graphql/data/util'
 import { useOnGlobalChainSwitch } from 'hooks/useGlobalChainSwitch'
 import { UNKNOWN_TOKEN_SYMBOL, useTokenFromActiveNetwork } from 'lib/hooks/useCurrency'
-import { getTokenAddress } from 'lib/utils/analytics'
+import { Swap } from 'pages/Swap'
 import { useCallback, useMemo, useState, useTransition } from 'react'
 import { ArrowLeft } from 'react-feather'
 import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components/macro'
+import { Field } from 'state/swap/actions'
+import { SwapState } from 'state/swap/reducer'
+import styled from 'styled-components'
 import { isAddress } from 'utils'
+import { addressesAreEquivalent } from 'utils/addressesAreEquivalent'
 
 import { OnChangeTimePeriod } from './ChartSection'
 import InvalidTokenDetails from './InvalidTokenDetails'
@@ -46,11 +45,18 @@ import InvalidTokenDetails from './InvalidTokenDetails'
 const TokenSymbol = styled.span`
   text-transform: uppercase;
   color: ${({ theme }) => theme.textSecondary};
+  margin-left: 8px;
 `
 const TokenActions = styled.div`
   display: flex;
   gap: 16px;
   color: ${({ theme }) => theme.textSecondary};
+`
+const TokenTitle = styled.div`
+  display: flex;
+  @media screen and (max-width: ${({ theme }) => theme.breakpoint.md}px) {
+    display: inline;
+  }
 `
 
 function useOnChainToken(address: string | undefined, skip: boolean) {
@@ -88,11 +94,11 @@ function useRelevantToken(
 }
 
 type TokenDetailsProps = {
-  urlAddress: string | undefined
+  urlAddress?: string
   inputTokenAddress?: string
-  chain: Chain
+  chain: InterfaceGqlChain
   tokenQuery: TokenQuery
-  tokenPriceQuery: TokenPriceQuery | undefined
+  tokenPriceQuery?: TokenPriceQuery
   onChangeTimePeriod: OnChangeTimePeriod
 }
 export default function TokenDetails({
@@ -111,8 +117,8 @@ export default function TokenDetails({
     [urlAddress]
   )
 
-  const pageChainId = CHAIN_NAME_TO_CHAIN_ID[chain]
-
+  const { chainId: connectedChainId } = useWeb3React()
+  const pageChainId = supportedChainIdFromGQLChain(chain)
   const tokenQueryData = tokenQuery.token
   const crossChainMap = useMemo(
     () =>
@@ -124,7 +130,6 @@ export default function TokenDetails({
   )
 
   const { token: detailedToken, didFetchFromChain } = useRelevantToken(address, pageChainId, tokenQueryData)
-  const { token: inputToken } = useRelevantToken(inputTokenAddress, pageChainId, undefined)
 
   const tokenWarning = address ? checkWarning(address) : null
   const isBlockedToken = tokenWarning?.canProceed === false
@@ -146,33 +151,38 @@ export default function TokenDetails({
   )
   useOnGlobalChainSwitch(navigateToTokenForChain)
 
-  const navigateToWidgetSelectedToken = useCallback(
-    (tokens: SwapTokens) => {
-      const newDefaultToken = tokens[Field.OUTPUT] ?? tokens.default
-      const address = newDefaultToken?.isNative ? NATIVE_CHAIN_ID : newDefaultToken?.address
+  const handleCurrencyChange = useCallback(
+    (tokens: Pick<SwapState, Field.INPUT | Field.OUTPUT>) => {
+      if (
+        addressesAreEquivalent(tokens[Field.INPUT]?.currencyId, address) ||
+        addressesAreEquivalent(tokens[Field.OUTPUT]?.currencyId, address)
+      ) {
+        return
+      }
+
+      const newDefaultTokenID = tokens[Field.OUTPUT]?.currencyId ?? tokens[Field.INPUT]?.currencyId
       startTokenTransition(() =>
         navigate(
           getTokenDetailsURL({
-            address,
+            // The function falls back to "NATIVE" if the address is null
+            address: newDefaultTokenID === 'ETH' ? null : newDefaultTokenID,
             chain,
-            inputAddress: tokens[Field.INPUT] ? getTokenAddress(tokens[Field.INPUT] as Currency) : null,
+            inputAddress:
+              // If only one token was selected before we navigate, then it was the default token and it's being replaced.
+              // On the new page, the *new* default token becomes the output, and we don't have another option to set as the input token.
+              tokens[Field.INPUT] && tokens[Field.INPUT]?.currencyId !== newDefaultTokenID
+                ? tokens[Field.INPUT]?.currencyId
+                : null,
           })
         )
       )
     },
-    [chain, navigate]
+    [address, chain, navigate]
   )
 
   const [continueSwap, setContinueSwap] = useState<{ resolve: (value: boolean | PromiseLike<boolean>) => void }>()
 
   const [openTokenSafetyModal, setOpenTokenSafetyModal] = useState(false)
-
-  // Show token safety modal if Swap-reviewing a warning token, at all times if the current token is blocked
-  const shouldShowSpeedbump = !useIsUserAddedTokenOnChain(address, pageChainId) && tokenWarning !== null
-  const onReviewSwapClick = useCallback(
-    () => new Promise<boolean>((resolve) => (shouldShowSpeedbump ? setContinueSwap({ resolve }) : resolve(true))),
-    [shouldShowSpeedbump]
-  )
 
   const onResolveSwap = useCallback(
     (value: boolean) => {
@@ -181,6 +191,7 @@ export default function TokenDetails({
     },
     [continueSwap, setContinueSwap]
   )
+
   // address will never be undefined if token is defined; address is checked here to appease typechecker
   if (detailedToken === undefined || !address) {
     return <InvalidTokenDetails pageChainId={pageChainId} isInvalidAddress={!address} />
@@ -200,9 +211,10 @@ export default function TokenDetails({
             <TokenInfoContainer data-testid="token-info-container">
               <TokenNameCell>
                 <CurrencyLogo currency={detailedToken} size="32px" hideL2Icon={false} />
-
-                {detailedToken.name ?? <Trans>Name not found</Trans>}
-                <TokenSymbol>{detailedToken.symbol ?? <Trans>Symbol not found</Trans>}</TokenSymbol>
+                <TokenTitle>
+                  {detailedToken.name ?? <Trans>Name not found</Trans>}
+                  <TokenSymbol>{detailedToken.symbol ?? <Trans>Symbol not found</Trans>}</TokenSymbol>
+                </TokenTitle>
               </TokenNameCell>
               <TokenActions>
                 <ShareButton currency={detailedToken} />
@@ -234,13 +246,14 @@ export default function TokenDetails({
 
         <RightPanel onClick={() => isBlockedToken && setOpenTokenSafetyModal(true)}>
           <div style={{ pointerEvents: isBlockedToken ? 'none' : 'auto' }}>
-            <Widget
-              defaultTokens={{
-                [Field.INPUT]: inputToken ?? undefined,
-                default: detailedToken ?? undefined,
+            <Swap
+              chainId={pageChainId}
+              prefilledState={{
+                [Field.INPUT]: { currencyId: inputTokenAddress },
+                [Field.OUTPUT]: { currencyId: address === NATIVE_CHAIN_ID ? 'ETH' : address },
               }}
-              onDefaultTokenChange={navigateToWidgetSelectedToken}
-              onReviewSwapClick={onReviewSwapClick}
+              onCurrencyChange={handleCurrencyChange}
+              disableTokenInputs={pageChainId !== connectedChainId}
             />
           </div>
           {tokenWarning && <TokenSafetyMessage tokenAddress={address} warning={tokenWarning} />}

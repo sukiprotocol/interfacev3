@@ -1,24 +1,16 @@
 import { Trans } from '@lingui/macro'
-import { TraceEvent } from '@uniswap/analytics'
 import { BrowserEvent, InterfaceElementName, SharedEventName } from '@uniswap/analytics-events'
 import { useWeb3React } from '@web3-react/core'
+import { TraceEvent } from 'analytics'
 import { useAccountDrawer } from 'components/AccountDrawer'
 import { ButtonText } from 'components/Button'
-import { MouseoverTooltipContent } from 'components/Tooltip'
+import { MouseoverTooltip } from 'components/Tooltip'
 import { useCallback, useEffect, useState } from 'react'
-import { useBuyFiatFlowCompleted } from 'state/user/hooks'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { ExternalLink } from 'theme'
 
 import { useFiatOnrampAvailability, useOpenModal } from '../../state/application/hooks'
 import { ApplicationModal } from '../../state/application/reducer'
-
-const Dot = styled.div`
-  height: 8px;
-  width: 8px;
-  background-color: ${({ theme }) => theme.accentActive};
-  border-radius: 50%;
-`
 
 export const MOONPAY_REGION_AVAILABILITY_ARTICLE =
   'https://support.uniswap.org/hc/en-us/articles/11306664890381-Why-isn-t-MoonPay-available-in-my-region-'
@@ -46,7 +38,6 @@ const StyledTextButton = styled(ButtonText)`
 export default function SwapBuyFiatButton() {
   const { account } = useWeb3React()
   const openFiatOnRampModal = useOpenModal(ApplicationModal.FIAT_ONRAMP)
-  const [buyFiatFlowCompleted, setBuyFiatFlowCompleted] = useBuyFiatFlowCompleted()
   const [checkFiatRegionAvailability, setCheckFiatRegionAvailability] = useState(false)
   const {
     available: fiatOnrampAvailable,
@@ -56,16 +47,14 @@ export default function SwapBuyFiatButton() {
   const [buyFiatFlowState, setBuyFiatFlowState] = useState(BuyFiatFlowState.INACTIVE)
   const [walletDrawerOpen, toggleWalletDrawer] = useAccountDrawer()
 
-  /*
-   * Depending on the current state of the buy fiat flow the user is in (buyFiatFlowState),
-   * the desired behavior of clicking the 'Buy' button is different.
-   * 1) Initially upon first click, need to check the availability of the feature in the user's
-   * region, and continue the flow.
-   * 2) If the feature is available in the user's region, need to connect a wallet, and continue
-   * the flow.
-   * 3) If the feature is available and a wallet account is connected, show fiat on ramp modal.
-   * 4) If the feature is unavailable, show feature unavailable tooltip.
-   */
+  // Depending on the current state of the buy fiat flow the user is in (buyFiatFlowState),
+  // the desired behavior of clicking the 'Buy' button is different.
+  // 1) Initially upon first click, need to check the availability of the feature in the user's
+  // region, and continue the flow.
+  // 2) If the feature is available in the user's region, need to connect a wallet, and continue
+  // the flow.
+  // 3) If the feature is available and a wallet account is connected, show fiat on ramp modal.
+  // 4) If the feature is unavailable, show feature unavailable tooltip.
   const handleBuyCrypto = useCallback(() => {
     if (!fiatOnrampAvailabilityChecked) {
       setCheckFiatRegionAvailability(true)
@@ -75,10 +64,8 @@ export default function SwapBuyFiatButton() {
       setBuyFiatFlowState(BuyFiatFlowState.ACTIVE_NEEDS_ACCOUNT)
     } else if (fiatOnrampAvailable && account) {
       openFiatOnRampModal()
-      setBuyFiatFlowCompleted(true)
       setBuyFiatFlowState(BuyFiatFlowState.INACTIVE)
     } else if (!fiatOnrampAvailable) {
-      setBuyFiatFlowCompleted(true)
       setBuyFiatFlowState(BuyFiatFlowState.INACTIVE)
     }
   }, [
@@ -88,7 +75,6 @@ export default function SwapBuyFiatButton() {
     walletDrawerOpen,
     toggleWalletDrawer,
     openFiatOnRampModal,
-    setBuyFiatFlowCompleted,
   ])
 
   // Continue buy fiat flow automatically when requisite state changes have occured.
@@ -111,9 +97,8 @@ export default function SwapBuyFiatButton() {
     !fiatOnrampAvailabilityChecked || (fiatOnrampAvailabilityChecked && fiatOnrampAvailable)
 
   return (
-    <MouseoverTooltipContent
-      wrap
-      content={
+    <MouseoverTooltip
+      text={
         <div data-testid="fiat-on-ramp-unavailable-tooltip">
           <Trans>Crypto purchases are not available in your region. </Trans>
           <TraceEvent
@@ -128,7 +113,7 @@ export default function SwapBuyFiatButton() {
         </div>
       }
       placement="bottom"
-      disableHover={fiatOnRampsUnavailableTooltipDisabled}
+      disabled={fiatOnRampsUnavailableTooltipDisabled}
     >
       <TraceEvent
         events={[BrowserEvent.onClick]}
@@ -138,9 +123,8 @@ export default function SwapBuyFiatButton() {
       >
         <StyledTextButton onClick={handleBuyCrypto} disabled={buyCryptoButtonDisabled} data-testid="buy-fiat-button">
           <Trans>Buy</Trans>
-          {!buyFiatFlowCompleted && <Dot data-testid="buy-fiat-flow-incomplete-indicator" />}
         </StyledTextButton>
       </TraceEvent>
-    </MouseoverTooltipContent>
+    </MouseoverTooltip>
   )
 }

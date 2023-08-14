@@ -1,5 +1,5 @@
-import { sendAnalyticsEvent } from '@uniswap/analytics'
 import { MoonpayEventName } from '@uniswap/analytics-events'
+import { sendAnalyticsEvent } from 'analytics'
 import { DEFAULT_TXN_DISMISS_MS } from 'constants/misc'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from 'state/hooks'
@@ -96,10 +96,6 @@ export function useCloseModal(): () => void {
 export function useOpenModal(modal: ApplicationModal): () => void {
   const dispatch = useAppDispatch()
   return useCallback(() => dispatch(setOpenModal(modal)), [dispatch, modal])
-}
-
-export function useToggleUniwalletModal(): () => void {
-  return useToggleModal(ApplicationModal.UNIWALLET_CONNECT)
 }
 
 export function useToggleSettingsMenu(): () => void {

@@ -1,10 +1,14 @@
 import { TransactionReceipt } from '@ethersproject/abstract-provider'
+import { ChainId } from '@uniswap/sdk-core'
 import { useWeb3React } from '@web3-react/core'
-import { SupportedChainId } from 'constants/chains'
+import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp'
 import useBlockNumber, { useFastForwardBlockNumber } from 'lib/hooks/useBlockNumber'
-import ms from 'ms.macro'
+import ms from 'ms'
 import { useCallback, useEffect } from 'react'
-import { retry, RetryableError, RetryOptions } from 'utils/retry'
+import { useTransactionRemover } from 'state/transactions/hooks'
+import { TransactionDetails } from 'state/transactions/types'
+
+import { CanceledError, retry, RetryableError, RetryOptions } from './retry'
 
 interface Transaction {
   addedTime: number
@@ -17,7 +21,7 @@ export function shouldCheck(lastBlockNumber: number, tx: Transaction): boolean {
   if (!tx.lastCheckedBlockNumber) return true
   const blocksSinceCheck = lastBlockNumber - tx.lastCheckedBlockNumber
   if (blocksSinceCheck < 1) return false
-  const minutesPending = (new Date().getTime() - tx.addedTime) / ms`1m`
+  const minutesPending = (new Date().getTime() - tx.addedTime) / ms(`1m`)
   if (minutesPending > 60) {
     // every 10 blocks if pending longer than an hour
     return blocksSinceCheck > 9
@@ -31,24 +35,26 @@ export function shouldCheck(lastBlockNumber: number, tx: Transaction): boolean {
 }
 
 const RETRY_OPTIONS_BY_CHAIN_ID: { [chainId: number]: RetryOptions } = {
-  [SupportedChainId.ARBITRUM_ONE]: { n: 10, minWait: 250, maxWait: 1000 },
-  [SupportedChainId.ARBITRUM_GOERLI]: { n: 10, minWait: 250, maxWait: 1000 },
-  [SupportedChainId.OPTIMISM]: { n: 10, minWait: 250, maxWait: 1000 },
-  [SupportedChainId.OPTIMISM_GOERLI]: { n: 10, minWait: 250, maxWait: 1000 },
+  [ChainId.ARBITRUM_ONE]: { n: 10, minWait: 250, maxWait: 1000 },
+  [ChainId.ARBITRUM_GOERLI]: { n: 10, minWait: 250, maxWait: 1000 },
+  [ChainId.OPTIMISM]: { n: 10, minWait: 250, maxWait: 1000 },
+  [ChainId.OPTIMISM_GOERLI]: { n: 10, minWait: 250, maxWait: 1000 },
 }
 const DEFAULT_RETRY_OPTIONS: RetryOptions = { n: 1, minWait: 0, maxWait: 0 }
 
 interface UpdaterProps {
-  pendingTransactions: { [hash: string]: Transaction }
+  pendingTransactions: { [hash: string]: TransactionDetails }
   onCheck: (tx: { chainId: number; hash: string; blockNumber: number }) => void
   onReceipt: (tx: { chainId: number; hash: string; receipt: TransactionReceipt }) => void
 }
 
 export default function Updater({ pendingTransactions, onCheck, onReceipt }: UpdaterProps): null {
-  const { chainId, provider } = useWeb3React()
+  const { account, chainId, provider } = useWeb3React()
 
   const lastBlockNumber = useBlockNumber()
   const fastForwardBlockNumber = useFastForwardBlockNumber()
+  const removeTransaction = useTransactionRemover()
+  const blockTimestamp = useCurrentBlockTimestamp()
 
   const getReceipt = useCallback(
     (hash: string) => {
@@ -56,9 +62,20 @@ export default function Updater({ pendingTransactions, onCheck, onReceipt }: Upd
       const retryOptions = RETRY_OPTIONS_BY_CHAIN_ID[chainId] ?? DEFAULT_RETRY_OPTIONS
       return retry(
         () =>
-          provider.getTransactionReceipt(hash).then((receipt) => {
+          provider.getTransactionReceipt(hash).then(async (receipt) => {
             if (receipt === null) {
-              console.debug(`Retrying tranasaction receipt for ${hash}`)
+              if (account) {
+                const tx = pendingTransactions[hash]
+                // Remove transactions past their deadline or - if there is no deadline - older than 6 hours.
+                if (tx.deadline) {
+                  // Deadlines are expressed as seconds since epoch, as they are used on-chain.
+                  if (blockTimestamp && tx.deadline < blockTimestamp.toNumber()) {
+                    removeTransaction(hash)
+                  }
+                } else if (tx.addedTime + ms(`6h`) < Date.now()) {
+                  removeTransaction(hash)
+                }
+              }
               throw new RetryableError()
             }
             return receipt
@@ -66,7 +83,7 @@ export default function Updater({ pendingTransactions, onCheck, onReceipt }: Upd
         retryOptions
       )
     },
-    [chainId, provider]
+    [account, blockTimestamp, chainId, pendingTransactions, provider, removeTransaction]
   )
 
   useEffect(() => {
@@ -78,17 +95,12 @@ export default function Updater({ pendingTransactions, onCheck, onReceipt }: Upd
         const { promise, cancel } = getReceipt(hash)
         promise
           .then((receipt) => {
-            if (receipt) {
-              fastForwardBlockNumber(receipt.blockNumber)
-              onReceipt({ chainId, hash, receipt })
-            } else {
-              onCheck({ chainId, hash, blockNumber: lastBlockNumber })
-            }
+            fastForwardBlockNumber(receipt.blockNumber)
+            onReceipt({ chainId, hash, receipt })
           })
           .catch((error) => {
-            if (!error.isCancelledError) {
-              console.warn(`Failed to get transaction receipt for ${hash}`, error)
-            }
+            if (error instanceof CanceledError) return
+            onCheck({ chainId, hash, blockNumber: lastBlockNumber })
           })
         return cancel
       })

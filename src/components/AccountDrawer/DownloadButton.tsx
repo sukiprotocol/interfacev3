@@ -1,9 +1,8 @@
-import { sendAnalyticsEvent } from '@uniswap/analytics'
-import { InterfaceElementName, InterfaceEventName, SharedEventName } from '@uniswap/analytics-events'
+import { InterfaceElementName } from '@uniswap/analytics-events'
 import { PropsWithChildren, useCallback } from 'react'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { ClickableStyle } from 'theme'
-import { isIOS } from 'utils/userAgent'
+import { openDownloadApp } from 'utils/openDownloadApp'
 
 const StyledButton = styled.button<{ padded?: boolean; branded?: boolean }>`
   ${ClickableStyle}
@@ -62,7 +61,7 @@ export function DownloadButton({
   const onButtonClick = useCallback(() => {
     // handles any actions required by the parent, i.e. cancelling wallet connection attempt or dismissing an ad
     onClick?.()
-    openDownloadApp(element)
+    openDownloadApp({ element })
   }, [element, onClick])
 
   return (

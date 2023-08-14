@@ -2,7 +2,7 @@ import { Trans } from '@lingui/macro'
 import { useWeb3React } from '@web3-react/core'
 import { useState } from 'react'
 import { ArrowUpCircle, X } from 'react-feather'
-import styled, { useTheme } from 'styled-components/macro'
+import styled, { useTheme } from 'styled-components'
 
 import Circle from '../../assets/images/blue-loader.svg'
 import { useExecuteCallback } from '../../state/governance/hooks'
@@ -37,7 +37,7 @@ const ConfirmedIcon = styled(ColumnCenter)`
 interface ExecuteModalProps {
   isOpen: boolean
   onDismiss: () => void
-  proposalId: string | undefined // id for the proposal to execute
+  proposalId?: string // id for the proposal to execute
 }
 
 export default function ExecuteModal({ isOpen, onDismiss, proposalId }: ExecuteModalProps) {

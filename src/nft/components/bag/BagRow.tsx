@@ -21,7 +21,7 @@ import { GenieAsset, UpdatedGenieAsset } from 'nft/types'
 import { ethNumberStandardFormatter, formatWeiToDecimal, getAssetHref } from 'nft/utils'
 import { MouseEvent, useCallback, useEffect, useReducer, useState } from 'react'
 import { Link } from 'react-router-dom'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 
 import * as styles from './BagRow.css'
 
@@ -82,7 +82,7 @@ const NoContentContainer = () => (
 
 interface BagRowProps {
   asset: UpdatedGenieAsset
-  usdPrice: number | undefined
+  usdPrice?: number
   removeAsset: (assets: GenieAsset[]) => void
   showRemove?: boolean
   grayscale?: boolean
@@ -168,7 +168,7 @@ export const BagRow = ({ asset, usdPrice, removeAsset, showRemove, grayscale, is
 
 interface PriceChangeBagRowProps {
   asset: UpdatedGenieAsset
-  usdPrice: number | undefined
+  usdPrice?: number
   markAssetAsReviewed: (asset: UpdatedGenieAsset, toKeep: boolean) => void
   top?: boolean
   isMobile: boolean
@@ -219,7 +219,7 @@ export const PriceChangeBagRow = ({ asset, usdPrice, markAssetAsReviewed, top, i
 
 interface UnavailableAssetsHeaderRowProps {
   assets?: UpdatedGenieAsset[]
-  usdPrice: number | undefined
+  usdPrice?: number
   clearUnavailableAssets: () => void
   didOpenUnavailableAssets: boolean
   setDidOpenUnavailableAssets: (didOpen: boolean) => void

@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/macro'
-import { formatCurrencyAmount, NumberType } from '@uniswap/conedison/format'
+import { useWeb3React } from '@web3-react/core'
 import Column from 'components/Column'
 import { ScrollBarStyles } from 'components/Common'
 import Row from 'components/Row'
@@ -11,8 +11,9 @@ import { useSellAsset } from 'nft/hooks'
 import { formatEth, generateTweetForList, pluralize } from 'nft/utils'
 import { useMemo } from 'react'
 import { Twitter, X } from 'react-feather'
-import styled, { css, useTheme } from 'styled-components/macro'
+import styled, { css, useTheme } from 'styled-components'
 import { BREAKPOINTS, ThemedText } from 'theme'
+import { formatCurrencyAmount, NumberType } from 'utils/formatNumbers'
 
 import { TitleRow } from '../shared'
 
@@ -76,7 +77,8 @@ const TweetRow = styled(Row)`
 export const SuccessScreen = ({ overlayClick }: { overlayClick: () => void }) => {
   const theme = useTheme()
   const sellAssets = useSellAsset((state) => state.sellAssets)
-  const nativeCurrency = useNativeCurrency()
+  const { chainId } = useWeb3React()
+  const nativeCurrency = useNativeCurrency(chainId)
 
   const totalEthListingValue = useMemo(() => getTotalEthValue(sellAssets), [sellAssets])
   const parsedAmount = tryParseCurrencyAmount(totalEthListingValue.toString(), nativeCurrency)

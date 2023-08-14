@@ -1,7 +1,7 @@
 import type { JsonRpcSigner, Web3Provider } from '@ethersproject/providers'
 import { addressesByNetwork, SupportedChainId } from '@looksrare/sdk'
 import { NftStandard } from 'graphql/data/__generated__/types-and-hooks'
-import ms from 'ms.macro'
+import ms from 'ms'
 import { SetPriceMethod, WarningType } from 'nft/components/profile/list/shared'
 import { useNFTList, useSellAsset } from 'nft/hooks'
 import {
@@ -227,22 +227,17 @@ export const getRoyalty = (listingMarket: ListingMarket, asset: WalletAsset) => 
   return baseFee * 0.01
 }
 
-// OpenSea has a 0.5% fee for all assets that do not have a royalty set
-export const getMarketplaceFee = (listingMarket: ListingMarket, asset: WalletAsset) => {
-  return listingMarket.name === 'OpenSea' && !asset.basisPoints ? 0.5 : listingMarket.fee
-}
-
 const BELOW_FLOOR_PRICE_THRESHOLD = 0.8
 
 export const findListingIssues = (sellAssets: WalletAsset[]) => {
   const missingExpiration = sellAssets.some((asset) => {
     return (
       asset.expirationTime != null &&
-      (isNaN(asset.expirationTime) || asset.expirationTime * 1000 - Date.now() < ms`60 seconds`)
+      (isNaN(asset.expirationTime) || asset.expirationTime * 1000 - Date.now() < ms(`60s`))
     )
   })
   const overMaxExpiration = sellAssets.some((asset) => {
-    return asset.expirationTime != null && asset.expirationTime * 1000 - Date.now() > ms`180 days`
+    return asset.expirationTime != null && asset.expirationTime * 1000 - Date.now() > ms(`180d`)
   })
 
   const listingsMissingPrice: [WalletAsset, Listing][] = []

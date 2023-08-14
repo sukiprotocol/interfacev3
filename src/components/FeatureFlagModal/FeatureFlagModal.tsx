@@ -1,14 +1,18 @@
 import { BaseVariant, FeatureFlag, featureFlagSettings, useUpdateFlag } from 'featureFlags'
-import { DetailsV2Variant, useDetailsV2Flag } from 'featureFlags/flags/nftDetails'
-import { PayWithAnyTokenVariant, usePayWithAnyTokenFlag } from 'featureFlags/flags/payWithAnyToken'
-import { SwapWidgetVariant, useSwapWidgetFlag } from 'featureFlags/flags/swapWidget'
+import { useCurrencyConversionFlag } from 'featureFlags/flags/currencyConversion'
+import { useForceUniswapXOnFlag } from 'featureFlags/flags/forceUniswapXOn'
+import { useMultichainUXFlag } from 'featureFlags/flags/multichainUx'
+import { useRoutingAPIForPriceFlag } from 'featureFlags/flags/priceRoutingApi'
 import { TraceJsonRpcVariant, useTraceJsonRpcFlag } from 'featureFlags/flags/traceJsonRpc'
+import { UniswapXVariant, useUniswapXFlag } from 'featureFlags/flags/uniswapx'
+import { useUniswapXEthOutputFlag } from 'featureFlags/flags/uniswapXEthOutput'
+import { useUniswapXSyntheticQuoteFlag } from 'featureFlags/flags/uniswapXUseSyntheticQuote'
 import { useUpdateAtom } from 'jotai/utils'
 import { Children, PropsWithChildren, ReactElement, ReactNode, useCallback, useState } from 'react'
 import { X } from 'react-feather'
 import { useModalIsOpen, useToggleFeatureFlags } from 'state/application/hooks'
 import { ApplicationModal } from 'state/application/reducer'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 
 const StyledModal = styled.div`
   position: fixed;
@@ -204,22 +208,46 @@ export default function FeatureFlagModal() {
         </CloseButton>
       </Header>
       <FeatureFlagOption
-        variant={PayWithAnyTokenVariant}
-        value={usePayWithAnyTokenFlag()}
-        featureFlag={FeatureFlag.payWithAnyToken}
-        label="Pay With Any Token"
+        variant={UniswapXVariant}
+        value={useUniswapXFlag()}
+        featureFlag={FeatureFlag.uniswapXEnabled}
+        label="Enable UniswapX on interface"
       />
       <FeatureFlagOption
-        variant={SwapWidgetVariant}
-        value={useSwapWidgetFlag()}
-        featureFlag={FeatureFlag.swapWidget}
-        label="Swap Widget"
+        variant={BaseVariant}
+        value={useForceUniswapXOnFlag()}
+        featureFlag={FeatureFlag.forceUniswapXOn}
+        label="Force routing api to enable UniswapX"
       />
       <FeatureFlagOption
-        variant={DetailsV2Variant}
-        value={useDetailsV2Flag()}
-        featureFlag={FeatureFlag.detailsV2}
-        label="Use the new details page for nfts"
+        variant={BaseVariant}
+        value={useUniswapXSyntheticQuoteFlag()}
+        featureFlag={FeatureFlag.uniswapXSyntheticQuote}
+        label="Force synthetic quotes for UniswapX"
+      />
+      <FeatureFlagOption
+        variant={BaseVariant}
+        value={useUniswapXEthOutputFlag()}
+        featureFlag={FeatureFlag.uniswapXEthOutputEnabled}
+        label="Enable eth output for UniswapX orders"
+      />
+      <FeatureFlagOption
+        variant={BaseVariant}
+        value={useRoutingAPIForPriceFlag()}
+        featureFlag={FeatureFlag.routingAPIPrice}
+        label="Use the routing-api v2 for price fetches"
+      />
+      <FeatureFlagOption
+        variant={BaseVariant}
+        value={useCurrencyConversionFlag()}
+        featureFlag={FeatureFlag.currencyConversion}
+        label="Enable currency conversion"
+      />
+      <FeatureFlagOption
+        variant={BaseVariant}
+        value={useMultichainUXFlag()}
+        featureFlag={FeatureFlag.multichainUX}
+        label="Updated Multichain UX"
       />
       <FeatureFlagGroup name="Debug">
         <FeatureFlagOption

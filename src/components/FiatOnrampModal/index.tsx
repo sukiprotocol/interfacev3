@@ -1,9 +1,10 @@
 import { Trans } from '@lingui/macro'
 import { useWeb3React } from '@web3-react/core'
 import { useCallback, useEffect, useState } from 'react'
+import { useHref } from 'react-router-dom'
 import { useCloseModal, useModalIsOpen } from 'state/application/hooks'
 import { ApplicationModal } from 'state/application/reducer'
-import styled, { useTheme } from 'styled-components/macro'
+import styled, { useTheme } from 'styled-components'
 import { CustomLightSpinner, ThemedText } from 'theme'
 import { useIsDarkMode } from 'theme/components/ThemeToggle'
 
@@ -19,7 +20,7 @@ const Wrapper = styled.div<{ isDarkMode: boolean }>`
   display: flex;
   flex-flow: column nowrap;
   margin: 0;
-  min-height: 720px;
+  flex: 1 1;
   min-width: 375px;
   position: relative;
   width: 100%;
@@ -79,6 +80,8 @@ export default function FiatOnrampModal() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  const swapUrl = useHref('/swap')
+
   const fetchSignedIframeUrl = useCallback(async () => {
     if (!account) {
       setError('Please connect an account before making a purchase.')
@@ -98,7 +101,7 @@ export default function FiatOnrampModal() {
           theme: isDarkMode ? 'dark' : 'light',
           colorCode: theme.accentAction,
           defaultCurrencyCode: 'eth',
-          redirectUrl: 'https://app.uniswap.org/#/swap',
+          redirectUrl: swapUrl,
           walletAddresses: JSON.stringify(
             MOONPAY_SUPPORTED_CURRENCY_CODES.reduce(
               (acc, currencyCode) => ({
@@ -118,14 +121,14 @@ export default function FiatOnrampModal() {
     } finally {
       setLoading(false)
     }
-  }, [account, isDarkMode, theme.accentAction])
+  }, [account, isDarkMode, swapUrl, theme.accentAction])
 
   useEffect(() => {
     fetchSignedIframeUrl()
   }, [fetchSignedIframeUrl])
 
   return (
-    <Modal isOpen={fiatOnrampModalOpen} onDismiss={closeModal} maxHeight={720}>
+    <Modal isOpen={fiatOnrampModalOpen} onDismiss={closeModal} height={80 /* vh */}>
       <Wrapper data-testid="fiat-onramp-modal" isDarkMode={isDarkMode}>
         {error ? (
           <>

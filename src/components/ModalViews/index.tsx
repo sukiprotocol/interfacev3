@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/macro'
 import { useWeb3React } from '@web3-react/core'
 import { ArrowUpCircle } from 'react-feather'
-import styled, { useTheme } from 'styled-components/macro'
+import styled, { useTheme } from 'styled-components'
 
 import Circle from '../../assets/images/blue-loader.svg'
 import { CloseIcon, CustomLightSpinner, ThemedText } from '../../theme'
@@ -39,15 +39,7 @@ export function LoadingView({ children, onDismiss }: { children: any; onDismiss:
   )
 }
 
-export function SubmittedView({
-  children,
-  onDismiss,
-  hash,
-}: {
-  children: any
-  onDismiss: () => void
-  hash: string | undefined
-}) {
+export function SubmittedView({ children, onDismiss, hash }: { children: any; onDismiss: () => void; hash?: string }) {
   const theme = useTheme()
   const { chainId } = useWeb3React()
 

@@ -13,7 +13,8 @@ import {
   SquareSudoSwapMarketplaceIcon,
   SquareZoraMarketplaceIcon,
 } from 'nft/components/icons'
-import { DetailsOrigin, GenieAsset, Listing, Markets, UpdatedGenieAsset, WalletAsset } from 'nft/types'
+import { DetailsOrigin, GenieAsset, Listing, Markets, Trait, UpdatedGenieAsset, WalletAsset } from 'nft/types'
+import qs from 'qs'
 import { v4 as uuidv4 } from 'uuid'
 
 export function getRarityStatus(
@@ -85,9 +86,10 @@ export const generateTweetForAsset = (asset: GenieAsset): string => {
 
 export const generateTweetForPurchase = (assets: UpdatedGenieAsset[], txHashUrl: string): string => {
   const multipleCollections = assets.length > 0 && assets.some((asset) => asset.address !== assets[0].address)
+  const collectionUrl = assets.length > 0 && !multipleCollections ? `/collection/${assets[0].address}` : ''
   const tweetText = `I just purchased ${
     multipleCollections ? `${assets.length} NFTs` : `${assets.length} ${assets[0].collectionName ?? 'NFT'}`
-  } with @Uniswap 🦄\n\nhttps://app.uniswap.org/#/nfts/collection/0x60bb1e2aa1c9acafb4d34f71585d7e959f387769\n${txHashUrl}`
+  } with @Uniswap 🦄\n\nhttps://app.uniswap.org/#/nfts${collectionUrl}\n${txHashUrl}`
   return `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`
 }
 
@@ -124,4 +126,15 @@ export const generateTweetForList = (assets: WalletAsset[]): string => {
           .map(({ collection, items }) => `${collection} ${items.map((item) => item).join(', ')}`)
           .join(', ')} \n\nMarketplaces: ${assets[0].marketplaces?.map((market) => market.name).join(', ')}`
   return `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`
+}
+
+export function getLinkForTrait(trait: Trait, collectionAddress: string): string {
+  const params = qs.stringify(
+    { traits: [`("${trait.trait_type}","${trait.trait_value}")`] },
+    {
+      arrayFormat: 'comma',
+    }
+  )
+
+  return `/nfts/collection/${collectionAddress}?${params}`
 }
