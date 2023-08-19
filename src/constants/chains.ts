@@ -1,6 +1,12 @@
 import { ChainId, SUPPORTED_CHAINS, SupportedChainsType } from '@uniswap/sdk-core'
 
-export const UniWalletSupportedChains = [ChainId.MAINNET, ChainId.ARBITRUM_ONE, ChainId.OPTIMISM, ChainId.POLYGON]
+export const UniWalletSupportedChains = [
+  ChainId.MAINNET,
+  ChainId.ARBITRUM_ONE,
+  ChainId.OPTIMISM,
+  ChainId.POLYGON,
+  ChainId.BASE,
+]
 
 export const CHAIN_IDS_TO_NAMES = {
   [ChainId.MAINNET]: 'mainnet',
@@ -113,24 +119,27 @@ export function getChainPriority(chainId: ChainId): number {
     case ChainId.GOERLI:
     case ChainId.SEPOLIA:
       return 0
-    case ChainId.POLYGON:
-    case ChainId.POLYGON_MUMBAI:
-      return 1
     case ChainId.ARBITRUM_ONE:
     case ChainId.ARBITRUM_GOERLI:
-      return 2
+      return 1
     case ChainId.OPTIMISM:
     case ChainId.OPTIMISM_GOERLI:
+      return 2
+    case ChainId.POLYGON:
+    case ChainId.POLYGON_MUMBAI:
       return 3
-    case ChainId.BNB:
+    case ChainId.BASE:
+    case ChainId.BASE_GOERLI:
       return 4
-    case ChainId.AVALANCHE:
+    case ChainId.BNB:
       return 5
+    case ChainId.AVALANCHE:
+      return 6
     case ChainId.CELO:
     case ChainId.CELO_ALFAJORES:
-      return 6
-    default:
       return 7
+    default:
+      return 8
   }
 }
 

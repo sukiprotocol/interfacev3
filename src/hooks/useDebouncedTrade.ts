@@ -26,6 +26,7 @@ export function useDebouncedTrade(
 ): {
   state: TradeState
   trade?: InterfaceTrade
+  swapQuoteLatency?: number
 }
 
 export function useDebouncedTrade(
@@ -37,6 +38,7 @@ export function useDebouncedTrade(
 ): {
   state: TradeState
   trade?: ClassicTrade
+  swapQuoteLatency?: number
 }
 /**
  * Returns the debounced v2+v3 trade for a desired swap.
@@ -57,47 +59,38 @@ export function useDebouncedTrade(
   state: TradeState
   trade?: InterfaceTrade
   method?: QuoteMethod
+  swapQuoteLatency?: number
 } {
   const { chainId } = useWeb3React()
   const autoRouterSupported = useAutoRouterSupported()
   const isWindowVisible = useIsWindowVisible()
 
-  const debouncedSwapQuoteFlagEnabled = useDebounceSwapQuoteFlag() === DebounceSwapQuoteVariant.Enabled
-  const [debouncedAmount, debouncedOtherCurrency] = useDebounce(
-    useMemo(() => [amountSpecified, otherCurrency], [amountSpecified, otherCurrency]),
-    debouncedSwapQuoteFlagEnabled ? DEBOUNCE_TIME_INCREASED : DEBOUNCE_TIME
+  const inputs = useMemo<[CurrencyAmount<Currency> | undefined, Currency | undefined]>(
+    () => [amountSpecified, otherCurrency],
+    [amountSpecified, otherCurrency]
   )
+  const debouncedSwapQuoteFlagEnabled = useDebounceSwapQuoteFlag() === DebounceSwapQuoteVariant.Enabled
+  const isDebouncing =
+    useDebounce(inputs, debouncedSwapQuoteFlagEnabled ? DEBOUNCE_TIME_INCREASED : DEBOUNCE_TIME) !== inputs
 
-  const isAWrapTransaction = useMemo(() => {
-    if (!chainId || !amountSpecified || !debouncedOtherCurrency) return false
+  const isWrap = useMemo(() => {
+    if (!chainId || !amountSpecified || !otherCurrency) return false
     const weth = WRAPPED_NATIVE_CURRENCY[chainId]
     return (
-      (amountSpecified.currency.isNative && weth?.equals(debouncedOtherCurrency)) ||
-      (debouncedOtherCurrency.isNative && weth?.equals(amountSpecified.currency))
+      (amountSpecified.currency.isNative && weth?.equals(otherCurrency)) ||
+      (otherCurrency.isNative && weth?.equals(amountSpecified.currency))
     )
-  }, [amountSpecified, chainId, debouncedOtherCurrency])
+  }, [amountSpecified, chainId, otherCurrency])
 
-  const shouldGetTrade = !isAWrapTransaction && isWindowVisible
+  const skipFetch = isDebouncing || !autoRouterSupported || !isWindowVisible || isWrap
 
   const [routerPreference] = useRouterPreference()
-  const routingAPITrade = useRoutingAPITrade(
+  return useRoutingAPITrade(
     tradeType,
-    amountSpecified ? debouncedAmount : undefined,
-    debouncedOtherCurrency,
+    amountSpecified,
+    otherCurrency,
     routerPreferenceOverride ?? routerPreference,
-    !(autoRouterSupported && shouldGetTrade), // skip fetching
+    skipFetch,
     account
-  )
-
-  const inDebounce =
-    (!debouncedAmount && Boolean(amountSpecified)) || (!debouncedOtherCurrency && Boolean(otherCurrency))
-  const isLoading = routingAPITrade.state === TradeState.LOADING || inDebounce
-
-  return useMemo(
-    () => ({
-      ...routingAPITrade,
-      ...(isLoading ? { state: TradeState.LOADING } : {}),
-    }),
-    [isLoading, routingAPITrade]
   )
 }
